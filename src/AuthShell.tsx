@@ -27,7 +27,8 @@ function SessionStatusContent() {
         const tokenResult = await authClient!.token();
         const token = tokenResult.data?.token;
         if (!token) throw new Error('Jeton de session indisponible');
-        const response = await fetch(`${apiUrl.replace(/\\/$/, '')}/admin/me`, {
+        const baseUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+        const response = await fetch(`${baseUrl}/admin/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (cancelled) return;
