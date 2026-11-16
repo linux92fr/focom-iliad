@@ -5,6 +5,7 @@ import { NeonAuthUIProvider } from '@neondatabase/auth/react/ui';
 import { authClient, getNeonAccessToken, isAuthConfigured } from './auth-client';
 import Portal from './App';
 import AdminPage from './AdminPage';
+import PublicArticlesPage from './PublicArticlesPage';
 
 function SessionStatus() {
   if (!authClient) return null;
@@ -227,7 +228,7 @@ function AuthPage() {
 function AuthApplication() {
   const navigate = useNavigate();
   if (!authClient) {
-    return <Routes><Route path="/auth/:pathname" element={<AuthPage />} /><Route path="*" element={<Portal />} /></Routes>;
+    return <Routes><Route path="/auth/:pathname" element={<AuthPage />} /><Route path="/actualites" element={<PublicArticlesPage />} /><Route path="/actualites/:slug" element={<PublicArticlesPage />} /><Route path="*" element={<Portal />} /></Routes>;
   }
   return (
     <NeonAuthUIProvider
@@ -243,6 +244,8 @@ function AuthApplication() {
       <Routes>
         <Route path="/auth/:pathname" element={<AuthPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/actualites" element={<PublicArticlesPage />} />
+        <Route path="/actualites/:slug" element={<PublicArticlesPage />} />
         <Route path="*" element={<Portal />} />
       </Routes>
     </NeonAuthUIProvider>
