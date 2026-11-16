@@ -8,7 +8,9 @@ type Article = {
   published_at?: string | null; updated_at?: string; author_name?: string | null; entity_ids?: number[]; category_ids?: number[];
 };
 type Stats = { articles: number; published: number; drafts: number; entities: number; profiles: number };
-type Entity = { id: number; name: string; slug: string; entity_type: string; lifecycle_status: 'active' | 'absorbed' | 'pending_confirmation'; effective_from: string | null; effective_to: string | null; absorbed_into_id: number | null; confirmation_note: string | null };\ntype Category = { id: number; name: string; slug: string };
+type Entity = { id: number; name: string; slug: string; entity_type: string; lifecycle_status: 'active' | 'absorbed' | 'pending_confirmation'; effective_from: string | null; effective_to: string | null; absorbed_into_id: number | null; confirmation_note: string | null };
+
+type Category = { id: number; name: string; slug: string };
 
 const emptyArticle = { title: '', slug: '', summary: '', body: '', cover_image_url: '', cover_image_alt: '', status: 'draft' as Article['status'], entity_ids: [] as number[], category_ids: [] as number[] };
 
