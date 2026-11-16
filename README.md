@@ -33,3 +33,26 @@ Portail d'information et de représentation syndicale FO pour les salariés du g
 Projet indépendant du site FOCOM UES ILIAD existant. Celui-ci pourra être référencé comme une section du portail, sans migration ni modification de son dépôt.
 
 Voir [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md), [docs/ENTITIES.md](docs/ENTITIES.md) et [docs/ROADMAP.md](docs/ROADMAP.md).
+
+## Neon Managed Auth
+
+The React/Vite frontend uses Neon Managed Better Auth through `@neondatabase/auth`.
+
+### Frontend environment
+
+Set `VITE_NEON_AUTH_URL` in the Sevalla **Static Site** environment variables to the Auth URL for Neon project `focom-iliad`, branch `production`. This is the public Auth endpoint, not a database credential.
+
+Never add `DATABASE_URL`, Neon API keys, or database passwords to frontend variables or GitHub.
+
+### Auth routes
+
+- `/auth/sign-up` — email and password registration with required email verification.
+- `/auth/sign-in` — email and password sign-in.
+- Neon Auth UI handles the configured verification-code flow.
+- The session bar displays the authenticated user's name/email and offers sign-out.
+
+New signups receive no editorial role. Editorial permissions remain controlled by the server-side `editorial_profiles` and `editorial_profile_entities` tables. Public signup is currently enabled by Neon Managed Auth; do not treat a successful signup as permission to access administration.
+
+### Deployment and validation
+
+The Static Site rebuilds from GitHub after the frontend commits. Configure `VITE_NEON_AUTH_URL` in Sevalla and trigger a redeploy. Then test sign-up with a real mailbox, complete the emailed verification code, sign in, and confirm the session bar shows the current user. A successful build alone does not prove live authentication.
