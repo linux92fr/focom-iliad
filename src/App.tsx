@@ -27,7 +27,7 @@ const actions = [
   ['Se mobiliser collectivement', 'Retrouver les campagnes, pétitions, consultations et appels à mobilisation.'],
 ]
 type HomepageArticle = { id: number; title: string; slug: string; summary: string | null; cover_image_url: string | null; cover_image_alt: string | null; published_at: string };
-const API = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const API = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
