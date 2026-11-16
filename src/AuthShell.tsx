@@ -1,4 +1,5 @@
-import { FormEvent, useState } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { BrowserRouter, Link, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import { NeonAuthUIProvider } from '@neondatabase/auth/react/ui';
 import { authClient, isAuthConfigured } from './auth-client';
