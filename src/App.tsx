@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const navItems = [
   ['Le groupe', '#groupe'],
@@ -26,8 +26,20 @@ const actions = [
   ['Porter des revendications communes', 'Construire des revendications à partir des attentes exprimées par les salariés.'],
   ['Se mobiliser collectivement', 'Retrouver les campagnes, pétitions, consultations et appels à mobilisation.'],
 ]
+type HomepageArticle = { id: number; title: string; slug: string; summary: string | null; cover_image_url: string | null; cover_image_alt: string | null; published_at: string };
+const API = (import.meta.env.VITE_API_URL || '').replace(/\\/$/, '');
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [latestArticles, setLatestArticles] = useState<HomepageArticle[]>([])
+  useEffect(() => {
+    let active = true
+    fetch(API + '/public/articles')
+      .then(response => response.ok ? response.json() : Promise.reject(new Error('Chargement impossible')))
+      .then(data => { if (active) setLatestArticles((data.articles || []).slice(0, 3)) })
+      .catch(() => { if (active) setLatestArticles([]) })
+    return () => { active = false }
+  }, [])
   const closeMenu = () => setMenuOpen(false)
   return (
     <div className="site-shell">
@@ -64,7 +76,7 @@ function App() {
           <div className="topic-grid">{entities.map((item, i) => <article className="topic-card" key={item.title}><span className="topic-number">0{i + 1}</span><span className="topic-icon">{['◎', '◇', '⌘', '▦'][i]}</span><h3>{item.title}</h3><p>{item.text}</p><a className="card-arrow" href="#representants">En savoir plus <b>↗</b></a></article>)}</div>
           <div className="section-callout"><div><span className="news-label">UNE SECTION DU PORTAIL</span><h3>FOCOM UES ILIAD</h3><p>Retrouvez l’espace dédié à la représentation FO de l’UES ILIAD. Ce site conserve son fonctionnement et son adresse propres.</p></div><a className="button button-red" href="https://focomues-iliad.fr/" target="_blank" rel="noreferrer">Accéder à FOCOM UES ILIAD <span>↗</span></a></div>
         </section>
-        <section className="news-section" id="actualites"><div className="section news-inner"><div className="news-heading"><div><p className="eyebrow">RESTER INFORMÉ</p><h2>À la une<span>.</span></h2></div><span className="coming-tag">ESPACE ACTUALITÉS</span></div><div className="news-placeholder"><div className="news-placeholder-mark">FO</div><div><span className="news-label">ESPACE EN CONSTRUCTION</span><h3>Les actualités FO du groupe ILIAD</h3><p>Les communiqués, informations et publications des différentes sections seront réunis ici, avec un classement par entité, thème et date.</p></div><a className="button button-red" href="/actualites">Consulter les actualités <span>↗</span></a><span className="news-arrow">↗</span></div></div></section>
+        <section className="news-section" id="actualites"><div className="section news-inner"><div className="news-heading"><div><p className="eyebrow">RESTER INFORMÉ</p><h2>À la une<span>.</span></h2></div><a className="coming-tag news-all-link" href="/actualites">TOUTES LES ACTUALITÉS ↗</a></div>{latestArticles.length ? <div className="home-news-grid">{latestArticles.map(item => <article className="home-news-card" key={item.id}>{item.cover_image_url && <a href={`/actualites/${item.slug}`}><img src={item.cover_image_url} alt={item.cover_image_alt || ''} loading="lazy" /></a>}<div className="home-news-card-content"><span className="news-label">{item.published_at ? new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(new Date(item.published_at)) : 'FOCOM ILIAD'}</span><h3><a href={`/actualites/${item.slug}`}>{item.title}</a></h3>{item.summary && <p>{item.summary}</p>}<a className="public-read-more" href={`/actualites/${item.slug}`}>Lire l’article ↗</a></div></article>)}</div> : <div className="news-placeholder"><div className="news-placeholder-mark">FO</div><div><span className="news-label">ACTUALITÉS FOCOM</span><h3>Les actualités FO du groupe ILIAD</h3><p>Les dernières publications apparaîtront ici dès leur mise en ligne.</p></div><a className="button button-red" href="/actualites">Consulter les actualités <span>↗</span></a><span className="news-arrow">↗</span></div>}</div></section>
         <section className="section entities-section" id="droits"><div className="section-heading compact"><div><p className="eyebrow">S’INFORMER ET SE DÉFENDRE</p><h2>Vos droits.<br /><em>Vos repères.</em></h2></div><p className="section-lead">Des ressources pour mieux comprendre vos droits au travail. Les règles pouvant varier selon la société, l’établissement et les accords applicables, rapprochez-vous de vos représentants pour une réponse adaptée à votre situation.</p></div><div className="rights-grid">{rights.map((item, i) => <article className="right-card" key={item[0]}><span>0{i + 1} / REPÈRES PRATIQUES</span><h3>{item[0]}</h3><p>{item[1]}</p><a href="#contact">Poser une question <b>↗</b></a></article>)}</div></section>
         <section className="action-section" id="agir"><div className="section"><div className="section-heading"><div><p className="eyebrow">REVENDIQUER ET AGIR</p><h2>Nos droits avancent<br /><em>par l’action collective.</em></h2></div><p className="section-lead">Les revendications FO partent du quotidien des salariés. Informer, consulter, construire des propositions et agir ensemble : chaque voix compte.</p></div><div className="action-grid">{actions.map((item, i) => <article className="action-card" key={item[0]}><span className="action-number">0{i + 1}</span><h3>{item[0]}</h3><p>{item[1]}</p><a href="#contact">Échanger avec FO <b>↗</b></a></article>)}</div></div></section>
         <section className="section reps-section" id="representants"><div className="section-heading"><div><p className="eyebrow">À VOS CÔTÉS</p><h2>Vos représentants<br /><em>FO sur le terrain.</em></h2></div><p className="section-lead">Les interlocuteurs et les périmètres de représentation seront organisés par société et établissement. Pour préserver la confidentialité, les coordonnées personnelles ne seront pas publiées sans accord.</p></div><div className="rep-panel"><div className="rep-mark">FO</div><div><span className="news-label">BESOIN D’UN CONTACT ?</span><h3>Vous souhaitez joindre un représentant FO ?</h3><p>Précisez votre société, votre établissement et l’objet de votre demande. Nous pourrons vous orienter vers le bon interlocuteur.</p></div><a className="button button-red" href="#contact">Nous contacter <span>↗</span></a></div></section>
