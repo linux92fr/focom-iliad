@@ -124,8 +124,8 @@ export default {
       if (url.pathname === "/admin/articles" && request.method === "GET") {
         try {
           const rows = await sql`
-            SELECT a.id, a.title, a.slug, a.summary, a.body, a.status, a.visibility,
-                   a.published_at, a.updated_at, p.display_name AS author_name
+            SELECT a.id, a.title, a.slug, a.summary, a.body, a.cover_image_url, a.cover_image_alt,
+                   a.status, a.visibility, a.published_at, a.updated_at, p.display_name AS author_name
             FROM articles a
             LEFT JOIN editorial_profiles p ON p.id = a.author_profile_id
             ORDER BY a.updated_at DESC LIMIT 100
@@ -142,13 +142,16 @@ export default {
         const title = typeof input.title === "string" ? input.title.trim().slice(0, 180) : "";
         const body = typeof input.body === "string" ? input.body : "";
         const summary = typeof input.summary === "string" ? input.summary.trim().slice(0, 500) : "";
+        const coverImageUrl = typeof input.cover_image_url === "string" ? input.cover_image_url.trim().slice(0, 2048) : "";
+        const coverImageAlt = typeof input.cover_image_alt === "string" ? input.cover_image_alt.trim().slice(0, 250) : "";
+        if (coverImageUrl && !/^https:\/\//i.test(coverImageUrl)) return json({ error: "L’image de couverture doit utiliser une adresse HTTPS." }, 400, corsHeaders);
         const slug = slugify(typeof input.slug === "string" && input.slug.trim() ? input.slug : title);
         if (!title || !slug) return json({ error: "Le titre est obligatoire" }, 400, corsHeaders);
         try {
           const rows = await sql`
             INSERT INTO articles (title, slug, summary, body, author_profile_id, status, visibility, published_at)
             VALUES (${title}, ${slug}, ${summary}, ${body}, ${profile.id}, 'draft', 'public', NULL)
-            RETURNING id, title, slug, summary, body, status, visibility, published_at, updated_at
+            RETURNING id, title, slug, summary, body, cover_image_url, cover_image_alt, status, visibility, published_at, updated_at
           `;
           return json({ article: rows[0] }, 201, corsHeaders);
         } catch (error) {
@@ -165,6 +168,9 @@ export default {
         const title = typeof input.title === "string" ? input.title.trim().slice(0, 180) : "";
         const summary = typeof input.summary === "string" ? input.summary.trim().slice(0, 500) : "";
         const body = typeof input.body === "string" ? input.body : "";
+        const coverImageUrl = typeof input.cover_image_url === "string" ? input.cover_image_url.trim().slice(0, 2048) : "";
+        const coverImageAlt = typeof input.cover_image_alt === "string" ? input.cover_image_alt.trim().slice(0, 250) : "";
+        if (coverImageUrl && !/^https:\/\//i.test(coverImageUrl)) return json({ error: "L’image de couverture doit utiliser une adresse HTTPS." }, 400, corsHeaders);
         const slug = slugify(typeof input.slug === "string" && input.slug.trim() ? input.slug : title);
         const status = ["draft", "review", "published", "archived"].includes(input.status) ? input.status : "draft";
         if (!title || !slug) return json({ error: "Le titre est obligatoire" }, 400, corsHeaders);
