@@ -58,6 +58,26 @@ function slugify(value) {
     .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 100);
 }
 
+function normalizeIds(value) {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.map(Number).filter(id => Number.isSafeInteger(id) && id > 0))];
+}
+
+async function saveArticleRelations(sql, articleId, entityIds, categoryIds) {
+  await sql`DELETE FROM article_entities WHERE article_id = ${articleId}`;
+  await sql`DELETE FROM article_categories WHERE article_id = ${articleId}`;
+  for (const entityId of entityIds) {
+    await sql`INSERT INTO article_entities (article_id, entity_id)
+      SELECT ${articleId}, id FROM entities WHERE id = ${entityId}
+      ON CONFLICT DO NOTHING`;
+  }
+  for (const categoryId of categoryIds) {
+    await sql`INSERT INTO article_categories (article_id, category_id)
+      SELECT ${articleId}, id FROM categories WHERE id = ${categoryId}
+      ON CONFLICT DO NOTHING`;
+  }
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin");
@@ -172,7 +192,9 @@ export default {
         try {
           const rows = await sql`
             SELECT a.id, a.title, a.slug, a.summary, a.body, a.cover_image_url, a.cover_image_alt,
-                   a.status, a.visibility, a.published_at, a.updated_at, p.display_name AS author_name
+                   a.status, a.visibility, a.published_at, a.updated_at, p.display_name AS author_name,
+                   ARRAY(SELECT ae.entity_id FROM article_entities ae WHERE ae.article_id = a.id) AS entity_ids,
+                   ARRAY(SELECT ac.category_id FROM article_categories ac WHERE ac.article_id = a.id) AS category_ids
             FROM articles a
             LEFT JOIN editorial_profiles p ON p.id = a.author_profile_id
             ORDER BY a.updated_at DESC LIMIT 100
@@ -193,6 +215,8 @@ export default {
         const coverImageAlt = typeof input.cover_image_alt === "string" ? input.cover_image_alt.trim().slice(0, 250) : "";
         if (coverImageUrl && !/^https:\/\//i.test(coverImageUrl)) return json({ error: "L’image de couverture doit utiliser une adresse HTTPS." }, 400, corsHeaders);
         const slug = slugify(typeof input.slug === "string" && input.slug.trim() ? input.slug : title);
+        const entityIds = normalizeIds(input.entity_ids);
+        const categoryIds = normalizeIds(input.category_ids);
         if (!title || !slug) return json({ error: "Le titre est obligatoire" }, 400, corsHeaders);
         try {
           const rows = await sql`
@@ -200,7 +224,8 @@ export default {
             VALUES (${title}, ${slug}, ${summary}, ${body}, ${coverImageUrl || null}, ${coverImageAlt || null}, ${profile.id}, 'draft', 'public', NULL)
             RETURNING id, title, slug, summary, body, cover_image_url, cover_image_alt, status, visibility, published_at, updated_at
           `;
-          return json({ article: rows[0] }, 201, corsHeaders);
+          await saveArticleRelations(sql, rows[0].id, entityIds, categoryIds);
+          return json({ article: { ...rows[0], entity_ids: entityIds, category_ids: categoryIds } }, 201, corsHeaders);
         } catch (error) {
           const message = String(error?.message || "");
           return json({ error: message.includes("articles_slug_key") ? "Ce lien existe déjà. Modifiez le slug." : "Création impossible. Vérifiez les informations saisies." }, 400, corsHeaders);
@@ -220,6 +245,8 @@ export default {
         if (coverImageUrl && !/^https:\/\//i.test(coverImageUrl)) return json({ error: "L’image de couverture doit utiliser une adresse HTTPS." }, 400, corsHeaders);
         const slug = slugify(typeof input.slug === "string" && input.slug.trim() ? input.slug : title);
         const status = ["draft", "review", "published", "archived"].includes(input.status) ? input.status : "draft";
+        const entityIds = normalizeIds(input.entity_ids);
+        const categoryIds = normalizeIds(input.category_ids);
         if (!title || !slug) return json({ error: "Le titre est obligatoire" }, 400, corsHeaders);
         try {
           const rows = await sql`
@@ -231,7 +258,8 @@ export default {
             RETURNING id, title, slug, summary, body, cover_image_url, cover_image_alt, status, visibility, published_at, updated_at
           `;
           if (!rows.length) return json({ error: "Article introuvable" }, 404, corsHeaders);
-          return json({ article: rows[0] }, 200, corsHeaders);
+          await saveArticleRelations(sql, id, entityIds, categoryIds);
+          return json({ article: { ...rows[0], entity_ids: entityIds, category_ids: categoryIds } }, 200, corsHeaders);
         } catch {
           return json({ error: "Enregistrement impossible. Vérifiez notamment que le slug est unique." }, 400, corsHeaders);
         }
