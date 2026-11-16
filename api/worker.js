@@ -138,6 +138,18 @@ export default {
         }}, 200, corsHeaders);
       }
 
+      if (url.pathname === "/admin/editorial-options" && request.method === "GET") {
+        try {
+          const [categories, entities] = await Promise.all([
+            sql`SELECT id, name, slug FROM categories WHERE is_active = TRUE ORDER BY sort_order, name`,
+            sql`SELECT id, name, slug, entity_type FROM entities WHERE is_active = TRUE ORDER BY name`,
+          ]);
+          return json({ categories, entities }, 200, corsHeaders);
+        } catch {
+          return json({ error: "Impossible de charger les catégories et entités" }, 503, corsHeaders);
+        }
+      }
+
       if (url.pathname === "/admin/dashboard" && request.method === "GET") {
         try {
           const [articles, published, drafts, entities, profiles] = await Promise.all([
