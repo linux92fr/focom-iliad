@@ -64,6 +64,7 @@ export default function PublicArticlesPage() {
   }, [slug]);
 
   return (
+    <>
     <main className="public-news-page">
       <header className="public-news-header">
         <Link to="/" className="public-back">← Retour au portail FOCOM ILIAD</Link>
@@ -98,5 +99,6 @@ export default function PublicArticlesPage() {
       }
     </main>
     <LegalFooter />
+    </>
   );
 }
