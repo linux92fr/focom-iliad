@@ -2,6 +2,25 @@ import { BrowserRouter, Link, Route, Routes, useNavigate, useParams } from 'reac
 import { NeonAuthUIProvider, AuthView } from '@neondatabase/auth/react/ui';
 import { authClient, isAuthConfigured } from './auth-client';
 
+function SessionStatus() {
+  if (!authClient) return null;
+  return <SessionStatusContent />;
+}
+
+function SessionStatusContent() {
+  const { data, isPending, error } = authClient!.useSession();
+  if (isPending) return <div className="session-status">Vérification de la session…</div>;
+  if (error) return <div className="session-status">État de connexion momentanément indisponible.</div>;
+  if (!data?.user) return null;
+
+  return (
+    <div className="session-status">
+      <span>Connecté : <strong>{data.user.name || data.user.email}</strong></span>
+      <button type="button" onClick={() => authClient!.signOut()}>Déconnexion</button>
+    </div>
+  );
+}
+
 function AuthPage() {
   const { pathname = 'sign-in' } = useParams();
   if (!isAuthConfigured || !authClient) {
@@ -48,6 +67,7 @@ function AuthApplication() {
         SIGN_UP_DESCRIPTION: 'Créez votre compte avec votre adresse e-mail.',
       }}
     >
+      <SessionStatus />
       <Routes>
         <Route path="/auth/:pathname" element={<AuthPage />} />
         <Route path="*" element={<Portal />} />
