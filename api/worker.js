@@ -1,4 +1,12 @@
 import { neon } from "@neondatabase/serverless";
+import { createRemoteJWKSet, jwtVerify } from "jose";
+
+let cachedJwks;
+function getJwks(env) {
+  if (!env.NEON_AUTH_JWKS_URL) throw new Error("NEON_AUTH_JWKS_URL is not configured");
+  if (!cachedJwks) cachedJwks = createRemoteJWKSet(new URL(env.NEON_AUTH_JWKS_URL));
+  return cachedJwks;
+}
 
 const json = (data, status = 200, headers = {}) =>
   new Response(JSON.stringify(data), {
@@ -30,7 +38,7 @@ export default {
         headers: {
           ...corsHeaders,
           "access-control-allow-methods": "GET, OPTIONS",
-          "access-control-allow-headers": "content-type",
+          "access-control-allow-headers": "authorization, content-type",
           "access-control-max-age": "600",
         },
       });
@@ -40,6 +48,42 @@ export default {
 
     if (request.method !== "GET") {
       return json({ error: "Method not allowed" }, 405, corsHeaders);
+    }
+
+    if (url.pathname === "/admin/me") {
+      if (request.method !== "GET") return json({ error: "Method not allowed" }, 405, corsHeaders);
+      const authorization = request.headers.get("authorization") || "";
+      if (!authorization.toLowerCase().startsWith("bearer ")) {
+        return json({ error: "Authentification requise" }, 401, corsHeaders);
+      }
+      if (!env.NEON_AUTH_BASE_URL || !env.DATABASE_URL) {
+        return json({ error: "Configuration serveur incomplète" }, 503, corsHeaders);
+      }
+      try {
+        const issuer = new URL(env.NEON_AUTH_BASE_URL).origin;
+        const { payload } = await jwtVerify(authorization.slice(7), getJwks(env), { issuer });
+        if (typeof payload.sub !== "string" || !payload.sub) {
+          return json({ error: "Jeton invalide" }, 401, corsHeaders);
+        }
+        const sql = neon(env.DATABASE_URL);
+        const rows = await sql`
+          SELECT id, display_name, global_role, is_active
+          FROM editorial_profiles
+          WHERE auth_user_id = ${payload.sub}
+          LIMIT 1
+        `;
+        const profile = rows[0];
+        if (!profile || !profile.is_active || profile.global_role !== "admin") {
+          return json({ error: "Accès administrateur refusé" }, 403, corsHeaders);
+        }
+        return json({ authorized: true, profile: {
+          id: profile.id,
+          displayName: profile.display_name,
+          role: profile.global_role
+        } }, 200, corsHeaders);
+      } catch {
+        return json({ error: "Jeton invalide ou vérification indisponible" }, 401, corsHeaders);
+      }
     }
 
     if (url.pathname === "/health") {
