@@ -6,6 +6,7 @@ import { authClient, getNeonAccessToken, isAuthConfigured } from './auth-client'
 import Portal from './App';
 import AdminPage from './AdminPage';
 import PublicArticlesPage from './PublicArticlesPage';
+import { LegalPage, SiteUtilities } from './LegalPages';
 
 function SessionStatus() {
   if (!authClient) return null;
@@ -228,7 +229,7 @@ function AuthPage() {
 function AuthApplication() {
   const navigate = useNavigate();
   if (!authClient) {
-    return <Routes><Route path="/auth/:pathname" element={<AuthPage />} /><Route path="/actualites" element={<PublicArticlesPage />} /><Route path="/actualites/:slug" element={<PublicArticlesPage />} /><Route path="*" element={<Portal />} /></Routes>;
+    return <><SiteUtilities /><Routes><Route path="/auth/:pathname" element={<AuthPage />} /><Route path="/actualites" element={<PublicArticlesPage />} /><Route path="/actualites/:slug" element={<PublicArticlesPage />} /><Route path="/mentions-legales" element={<LegalPage />} /><Route path="/confidentialite" element={<LegalPage />} /><Route path="*" element={<Portal />} /></Routes></>;
   }
   return (
     <NeonAuthUIProvider
@@ -241,11 +242,14 @@ function AuthApplication() {
       localization={{ SIGN_IN: 'Connexion à votre espace', SIGN_UP: 'Créer votre compte' }}
     >
       <SessionStatus />
+      <SiteUtilities />
       <Routes>
         <Route path="/auth/:pathname" element={<AuthPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/actualites" element={<PublicArticlesPage />} />
         <Route path="/actualites/:slug" element={<PublicArticlesPage />} />
+        <Route path="/mentions-legales" element={<LegalPage />} />
+        <Route path="/confidentialite" element={<LegalPage />} />
         <Route path="*" element={<Portal />} />
       </Routes>
     </NeonAuthUIProvider>
