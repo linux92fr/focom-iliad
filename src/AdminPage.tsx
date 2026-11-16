@@ -5,12 +5,12 @@ import { authClient, getNeonAccessToken } from './auth-client';
 type Article = {
   id: number; title: string; slug: string; summary: string; body: string; cover_image_url?: string | null; cover_image_alt?: string | null;
   status: 'draft' | 'review' | 'published' | 'archived';
-  published_at?: string | null; updated_at?: string; author_name?: string | null;
+  published_at?: string | null; updated_at?: string; author_name?: string | null; entity_ids?: number[]; category_ids?: number[];
 };
 type Stats = { articles: number; published: number; drafts: number; entities: number; profiles: number };
-type Entity = { id: number; name: string; slug: string; entity_type: string; lifecycle_status: 'active' | 'absorbed' | 'pending_confirmation'; effective_from: string | null; effective_to: string | null; absorbed_into_id: number | null; confirmation_note: string | null };
+type Entity = { id: number; name: string; slug: string; entity_type: string; lifecycle_status: 'active' | 'absorbed' | 'pending_confirmation'; effective_from: string | null; effective_to: string | null; absorbed_into_id: number | null; confirmation_note: string | null };\ntype Category = { id: number; name: string; slug: string };
 
-const emptyArticle = { title: '', slug: '', summary: '', body: '', cover_image_url: '', cover_image_alt: '', status: 'draft' as Article['status'] };
+const emptyArticle = { title: '', slug: '', summary: '', body: '', cover_image_url: '', cover_image_alt: '', status: 'draft' as Article['status'], entity_ids: [] as number[], category_ids: [] as number[] };
 
 function escapeHtml(value: string) {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -41,7 +41,7 @@ function markdownPreview(markdown: string) {
 export default function AdminPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [articles, setArticles] = useState<Article[]>([]);
-  const [entities, setEntities] = useState<Entity[]>([]);
+  const [entities, setEntities] = useState<Entity[]>([]);\n  const [categories, setCategories] = useState<Category[]>([]);
   const [selected, setSelected] = useState<Article | null>(null);
   const [form, setForm] = useState(emptyArticle);
   const [loading, setLoading] = useState(true);
@@ -71,7 +71,7 @@ export default function AdminPage() {
       const [dashboard, listing, registry] = await Promise.all([api('/admin/dashboard'), api('/admin/articles'), api('/admin/editorial-options')]);
       setStats(dashboard.stats);
       setArticles(listing.articles);
-      setEntities(registry.entities || []);
+      setEntities(registry.entities || []);\n      setCategories(registry.categories || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Chargement impossible.');
     } finally { setLoading(false); }
@@ -84,7 +84,7 @@ export default function AdminPage() {
   }
   function startEdit(article: Article) {
     setSelected(article);
-    setForm({ title: article.title, slug: article.slug, summary: article.summary || '', body: article.body || '', cover_image_url: article.cover_image_url || '', cover_image_alt: article.cover_image_alt || '', status: article.status });
+    setForm({ title: article.title, slug: article.slug, summary: article.summary || '', body: article.body || '', cover_image_url: article.cover_image_url || '', cover_image_alt: article.cover_image_alt || '', status: article.status, entity_ids: article.entity_ids || [], category_ids: article.category_ids || [] });
     setNotice(''); setError(''); setPreview(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -111,7 +111,7 @@ export default function AdminPage() {
       });
       setNotice(selected ? 'Article mis à jour.' : 'Brouillon créé.');
       setSelected(result.article);
-      setForm({ title: result.article.title, slug: result.article.slug, summary: result.article.summary || '', body: result.article.body || '', cover_image_url: result.article.cover_image_url || '', cover_image_alt: result.article.cover_image_alt || '', status: result.article.status });
+      setForm({ title: result.article.title, slug: result.article.slug, summary: result.article.summary || '', body: result.article.body || '', cover_image_url: result.article.cover_image_url || '', cover_image_alt: result.article.cover_image_alt || '', status: result.article.status, entity_ids: result.article.entity_ids || form.entity_ids, category_ids: result.article.category_ids || form.category_ids });
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Enregistrement impossible.');
@@ -163,6 +163,16 @@ export default function AdminPage() {
             <label>Titre<input required maxLength={180} value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} /></label>
             <label>Slug (adresse de l’article)<input value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} placeholder="genere-depuis-le-titre" /></label>
             <label>Résumé<textarea rows={2} maxLength={500} value={form.summary} onChange={e => setForm({ ...form, summary: e.target.value })} /></label>
+            <div className="admin-taxonomy-grid">
+              <fieldset className="admin-taxonomy"><legend>Entités concernées</legend>
+                {entities.map(entity => <label className="admin-check-option" key={entity.id}><input type="checkbox" checked={form.entity_ids.includes(entity.id)} onChange={e => setForm({ ...form, entity_ids: e.target.checked ? [...form.entity_ids, entity.id] : form.entity_ids.filter(id => id !== entity.id) })} /><span>{entity.name}{entity.lifecycle_status === 'absorbed' ? ' (absorbée)' : entity.lifecycle_status === 'pending_confirmation' ? ' (à confirmer)' : ''}</span></label>)}
+                {!entities.length && <small>Aucune entité disponible.</small>}
+              </fieldset>
+              <fieldset className="admin-taxonomy"><legend>Catégories</legend>
+                {categories.map(category => <label className="admin-check-option" key={category.id}><input type="checkbox" checked={form.category_ids.includes(category.id)} onChange={e => setForm({ ...form, category_ids: e.target.checked ? [...form.category_ids, category.id] : form.category_ids.filter(id => id !== category.id) })} /><span>{category.name}</span></label>)}
+                {!categories.length && <small>Aucune catégorie créée pour le moment.</small>}
+              </fieldset>
+            </div>
             <div className="admin-cover-fields"><label>Image de couverture (URL HTTPS)<input type="url" placeholder="https://…" value={form.cover_image_url} onChange={e => setForm({ ...form, cover_image_url: e.target.value })} /></label><label>Texte alternatif de l’image<input maxLength={250} placeholder="Description de l’image" value={form.cover_image_alt} onChange={e => setForm({ ...form, cover_image_alt: e.target.value })} /></label>{form.cover_image_url && <img className="admin-cover-preview" src={form.cover_image_url} alt={form.cover_image_alt || 'Aperçu de la couverture'} />}</div>
             <div className="admin-editor-toolbar">
               <span>MISE EN FORME</span>
