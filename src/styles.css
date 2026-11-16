@@ -153,3 +153,38 @@
 .admin-check-option input{width:14px!important;height:14px;flex:0 0 14px;margin:1px 0 0;accent-color:#d71920}
 .admin-taxonomy small{font-size:10px;color:var(--muted)}
 @media(max-width:650px){.admin-taxonomy-grid{grid-template-columns:1fr}}
+
+/* Legal information, cookie preferences and back-to-top */
+.legal-footer-links{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.legal-footer-links a,.legal-footer-links button{padding:0;border:0;background:transparent;color:#d3dce6;font:inherit;font-size:10px;cursor:pointer}
+.legal-footer-links a:hover,.legal-footer-links button:hover{text-decoration:underline;color:#fff}
+.back-to-top{position:fixed;right:24px;bottom:24px;z-index:900;width:54px;height:54px;border:0;border-radius:50%;background:var(--red);color:#fff;box-shadow:0 5px 22px #10243d35;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;cursor:pointer;font-size:24px;line-height:1}
+.back-to-top span{font-size:8px;font-weight:700;letter-spacing:.4px}
+.cookie-settings-trigger{position:fixed;right:24px;bottom:88px;z-index:899;border:1px solid #dce2e8;background:#fff;color:var(--navy);padding:8px 12px;border-radius:20px;font:700 10px 'DM Sans',sans-serif;box-shadow:0 3px 14px #10243d18;cursor:pointer}
+.cookie-banner{position:fixed;left:22px;right:22px;bottom:20px;z-index:1200;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px 24px;background:#fff;border:1px solid var(--line);box-shadow:0 12px 45px #10243d30}
+.cookie-banner>div:first-child{max-width:760px}
+.cookie-banner strong{font:800 15px Manrope,sans-serif;color:var(--navy)}
+.cookie-banner p,.cookie-choice p{font-size:11px;line-height:1.65;color:#657487;margin:7px 0}
+.cookie-banner a{font-size:11px;color:var(--red);font-weight:700}
+.cookie-banner-actions,.cookie-modal-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cookie-banner-actions button,.cookie-modal-actions button{border:1px solid var(--navy);padding:10px 13px;font:700 10px 'DM Sans',sans-serif;cursor:pointer}
+.cookie-reject{background:#fff;color:var(--navy)}
+.cookie-accept{background:var(--navy);color:#fff}
+.cookie-customize{background:#f4f6f8;color:var(--navy);border-color:var(--line)!important}
+.cookie-modal-backdrop{position:fixed;inset:0;z-index:1300;background:#10243d80;display:grid;place-items:center;padding:20px}
+.cookie-modal{position:relative;width:min(100%,560px);padding:30px;background:#fff;box-shadow:0 18px 60px #0003}
+.cookie-modal h2{font:800 27px Manrope,sans-serif;color:var(--navy);margin:4px 0 22px}
+.cookie-modal-close{position:absolute;right:16px;top:12px;border:0;background:transparent;font-size:26px;color:var(--navy);cursor:pointer}
+.cookie-choice{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 0;border-top:1px solid var(--line)}
+.cookie-choice strong{font-size:12px;color:var(--navy)}
+.cookie-choice p{max-width:390px;margin-bottom:0}
+.cookie-choice input{width:18px;height:18px;accent-color:var(--red)}
+.cookie-always-on{font-size:10px;font-weight:700;color:#18794e;white-space:nowrap}
+.cookie-modal-actions{justify-content:flex-end;margin-top:20px}
+.legal-page{max-width:900px;min-height:70vh;margin:0 auto;padding:60px 28px 90px}
+.legal-page>h1{font:800 clamp(36px,5vw,54px)/1.15 Manrope,sans-serif;color:var(--navy);letter-spacing:-1.5px;margin:12px 0 36px}
+.legal-page section{padding:22px 0;border-top:1px solid var(--line)}
+.legal-page section h2{font:800 18px Manrope,sans-serif;color:var(--navy);margin:0 0 12px}
+.legal-page section p{font-size:13px;line-height:1.85;color:#536477}
+.legal-warning{padding:15px 18px;background:#fff4df;border-left:3px solid #c58a1a;color:#76500b;font-size:11px;line-height:1.7;margin-top:26px}
+@media(max-width:760px){.footer .legal-footer-links{gap:12px}.cookie-banner{left:10px;right:10px;bottom:10px;display:block;padding:17px}.cookie-banner-actions{margin-top:14px}.cookie-banner-actions button{flex:1}.cookie-settings-trigger{right:16px;bottom:82px}.back-to-top{right:16px;bottom:18px;width:48px;height:48px}.legal-page{padding:40px 20px 70px}}
