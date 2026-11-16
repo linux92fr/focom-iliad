@@ -4,91 +4,74 @@ const navItems = [
   ['Le groupe', '#groupe'],
   ['Actualités', '#actualites'],
   ['Vos droits', '#droits'],
-  ['Revendiquer', '#agir'],
+  ['Nos actions', '#agir'],
   ['Vos représentants', '#representants'],
 ]
-
-const topics = [
-  { number: '01', title: 'Le groupe ILIAD', description: 'Comprendre le groupe, ses activités et les différents périmètres représentés.', href: '#groupe', icon: '◎' },
-  { number: '02', title: 'Vos droits', description: 'Retrouver les informations pratiques, les accords et les ressources utiles.', href: '#droits', icon: '§' },
-  { number: '03', title: 'Revendiquer et agir', description: 'Suivre les revendications, les campagnes et les mobilisations collectives.', href: '#agir', icon: '↗' },
+const entities = [
+  { title: 'Télécommunications', text: 'Les métiers, les équipes et les réalités des activités télécoms du groupe.' },
+  { title: 'Services et solutions', text: 'Les activités de services, les fonctions support et les équipes qui les font vivre.' },
+  { title: 'Cloud et infrastructures', text: 'Les métiers techniques, les infrastructures et les expertises numériques.' },
+  { title: 'Périmètres et établissements', text: 'Des informations à retrouver selon votre société et votre établissement.' },
 ]
-
+const rights = [
+  ['Contrat de travail', 'Repères sur le contrat, la période d’essai, la rémunération et les évolutions professionnelles.'],
+  ['Temps de travail', 'Durées, horaires, repos, congés et dispositifs applicables selon votre situation.'],
+  ['Rémunération', 'Salaire, primes, participation, intéressement et éléments de rémunération.'],
+  ['Santé et conditions de travail', 'Prévention, sécurité, charge de travail et accompagnement des situations difficiles.'],
+  ['Représentation collective', 'CSE, droits syndicaux, accords collectifs et moyens d’expression des salariés.'],
+  ['Égalité et respect', 'Égalité professionnelle, lutte contre les discriminations et prévention du harcèlement.'],
+]
+const actions = [
+  ['Faire remonter les réalités du terrain', 'Partager les difficultés rencontrées dans votre équipe ou votre établissement.'],
+  ['Porter des revendications communes', 'Construire des revendications à partir des attentes exprimées par les salariés.'],
+  ['Se mobiliser collectivement', 'Retrouver les campagnes, pétitions, consultations et appels à mobilisation.'],
+]
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
-
+  const closeMenu = () => setMenuOpen(false)
   return (
     <div className="site-shell">
       <div className="topline"><span>FORCE OUVRIÈRE</span><span>PORTAIL SYNDICAL DU GROUPE ILIAD</span></div>
       <header className="header">
-        <a className="brand" href="#" aria-label="Accueil FOCOM ILIAD">
-          <span className="brand-mark"><strong>FO</strong><i>COM</i></span>
-          <span className="brand-name">ILIAD<small>LA VOIX DES SALARIÉS</small></span>
-        </a>
+        <a className="brand" href="#accueil" aria-label="Accueil FOCOM ILIAD"><img src="/focom-logo.jpg" alt="Logo officiel FOCOM" /><span className="brand-name">ILIAD<small>PORTAIL SYNDICAL DU GROUPE</small></span></a>
         <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label="Ouvrir le menu">☰</button>
         <nav className={menuOpen ? 'nav nav-open' : 'nav'}>
-          {navItems.map(([label, href]) => <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>)}
-          <a className="contact-link" href="#contact" onClick={() => setMenuOpen(false)}>Nous contacter <span>↗</span></a>
+          {navItems.map(([label, href]) => <a key={href} href={href} onClick={closeMenu}>{label}</a>)}
+          <a href="#adherer" onClick={closeMenu}>Adhérer</a>
+          <a className="contact-link" href="#contact" onClick={closeMenu}>Nous contacter <span>↗</span></a>
         </nav>
       </header>
-
       <main>
-        <section className="hero">
+        <section className="hero" id="accueil">
           <div className="hero-copy">
             <p className="eyebrow"><span /> FORCE OUVRIÈRE · GROUPE ILIAD</p>
             <h1>La voix des salariés.<br /><em>La force du collectif.</em></h1>
-            <p className="hero-intro">Un portail pour s'informer, comprendre ses droits et faire entendre les revendications des salariés du groupe ILIAD.</p>
-            <div className="hero-actions">
-              <a className="button button-red" href="#actualites">Découvrir les actualités <span>→</span></a>
-              <a className="text-link" href="#representants">Trouver vos représentants</a>
-            </div>
+            <p className="hero-intro">Un portail pour s’informer, comprendre ses droits et faire entendre les revendications des salariés du groupe ILIAD.</p>
+            <div className="hero-actions"><a className="button button-red" href="#actualites">Découvrir les actualités <span>→</span></a><a className="text-link" href="#representants">Trouver vos représentants</a></div>
           </div>
-          <div className="hero-panel">
-            <div className="panel-top"><span>FO · ILIAD</span><span>ENSEMBLE</span></div>
-            <div className="panel-symbol">FO</div>
-            <div className="panel-caption">INFORMER<br />DÉFENDRE<br />AGIR</div>
-            <div className="panel-bottom"><span>UN PORTAIL · DES ÉQUIPES · UNE MÊME FORCE</span><b>01 / 03</b></div>
-          </div>
+          <div className="hero-panel"><div className="panel-top"><span>FOCOM · ILIAD</span><span>ENSEMBLE</span></div><img className="hero-logo" src="/focom-logo.jpg" alt="FOCOM, Force Ouvrière Communication" /><div className="panel-caption">INFORMER<br />DÉFENDRE<br />AGIR</div><div className="panel-bottom"><span>UN PORTAIL · DES ÉQUIPES · UNE MÊME FORCE</span><b>01 / 06</b></div></div>
           <div className="hero-index">01 <span>—</span> LE PORTAIL FO</div>
         </section>
-
         <section className="quick-strip" aria-label="Accès rapides">
           <a href="#actualites"><span className="quick-icon">▤</span><span><b>Actualités</b><small>Les informations du groupe</small></span><strong>↗</strong></a>
           <a href="#droits"><span className="quick-icon">§</span><span><b>Vos droits</b><small>Comprendre et connaître</small></span><strong>↗</strong></a>
           <a href="#agir"><span className="quick-icon">✳</span><span><b>Nos revendications</b><small>Nos priorités et nos actions</small></span><strong>↗</strong></a>
           <a href="#contact"><span className="quick-icon">✉</span><span><b>Nous contacter</b><small>Échanger avec FO</small></span><strong>↗</strong></a>
         </section>
-
         <section className="section intro-section" id="groupe">
-          <div className="section-heading">
-            <div><p className="eyebrow">UN GROUPE, DES RÉALITÉS</p><h2>Une représentation<br /><em>au plus près du terrain.</em></h2></div>
-            <p className="section-lead">Le groupe ILIAD rassemble des activités, des métiers et des équipes aux réalités diverses. Ce portail a vocation à rendre l'information syndicale plus accessible et à faciliter les échanges entre les salariés et leurs représentants FO.</p>
-          </div>
-          <div className="topic-grid">
-            {topics.map(topic => <a className="topic-card" href={topic.href} key={topic.number}><span className="topic-number">{topic.number}</span><span className="topic-icon">{topic.icon}</span><h3>{topic.title}</h3><p>{topic.description}</p><span className="card-arrow">Découvrir <b>↗</b></span></a>)}
-          </div>
+          <div className="section-heading"><div><p className="eyebrow">UN GROUPE, DES RÉALITÉS</p><h2>Une représentation<br /><em>au plus près du terrain.</em></h2></div><p className="section-lead">Le groupe ILIAD rassemble des activités, des métiers et des équipes aux réalités diverses. FO souhaite rendre l’information syndicale plus accessible et faciliter les échanges entre les salariés et leurs représentants.</p></div>
+          <div className="topic-grid">{entities.map((item, i) => <article className="topic-card" key={item.title}><span className="topic-number">0{i + 1}</span><span className="topic-icon">{['◎', '◇', '⌘', '▦'][i]}</span><h3>{item.title}</h3><p>{item.text}</p><a className="card-arrow" href="#representants">En savoir plus <b>↗</b></a></article>)}</div>
+          <div className="section-callout"><div><span className="news-label">UNE SECTION DU PORTAIL</span><h3>FOCOM UES ILIAD</h3><p>Retrouvez l’espace dédié à la représentation FO de l’UES ILIAD. Ce site conserve son fonctionnement et son adresse propres.</p></div><a className="button button-red" href="https://focomues-iliad.fr/" target="_blank" rel="noreferrer">Accéder à FOCOM UES ILIAD <span>↗</span></a></div>
         </section>
-
-        <section className="news-section" id="actualites">
-          <div className="section news-inner">
-            <div className="news-heading"><div><p className="eyebrow">RESTER INFORMÉ</p><h2>À la une<span>.</span></h2></div><span className="coming-tag">ESPACE ACTUALITÉS</span></div>
-            <div className="news-placeholder"><div className="news-placeholder-mark">FO</div><div><span className="news-label">PROCHAINEMENT</span><h3>Les actualités FO du groupe ILIAD</h3><p>Les communications et publications des différentes sections seront réunies ici. Les contenus seront classés par entité et par thème.</p></div><span className="news-arrow">↗</span></div>
-          </div>
-        </section>
-
-        <section className="section entities-section" id="droits">
-          <div className="section-heading compact"><div><p className="eyebrow">S'INFORMER ET SE DÉFENDRE</p><h2>Vos repères.<br /><em>Vos ressources.</em></h2></div><p className="section-lead">Des informations fiables et des ressources pratiques pour accompagner les salariés au quotidien.</p></div>
-          <div className="resource-row"><div><span>01 / INFORMATIONS</span><h3>Connaître vos droits</h3><p>Fiches pratiques, accords collectifs et informations sociales.</p></div><a href="#contact" aria-label="En savoir plus sur les droits">↗</a></div>
-          <div className="resource-row" id="agir"><div><span>02 / ACTIONS COLLECTIVES</span><h3>Faire entendre vos revendications</h3><p>Priorités syndicales, consultations et mobilisations.</p></div><a href="#contact" aria-label="En savoir plus sur les actions">↗</a></div>
-          <div className="resource-row" id="representants"><div><span>03 / PROXIMITÉ</span><h3>Identifier vos représentants FO</h3><p>Retrouver les interlocuteurs selon votre entreprise ou établissement.</p></div><a href="#contact" aria-label="Trouver un représentant">↗</a></div>
-        </section>
-
-        <section className="contact-band" id="contact"><div><p className="eyebrow">RESTONS EN CONTACT</p><h2>Une question, une situation,<br /><em>une envie d'agir ?</em></h2></div><a className="button button-light" href="#representants">Trouver un interlocuteur FO <span>↗</span></a></section>
+        <section className="news-section" id="actualites"><div className="section news-inner"><div className="news-heading"><div><p className="eyebrow">RESTER INFORMÉ</p><h2>À la une<span>.</span></h2></div><span className="coming-tag">ESPACE ACTUALITÉS</span></div><div className="news-placeholder"><div className="news-placeholder-mark">FO</div><div><span className="news-label">ESPACE EN CONSTRUCTION</span><h3>Les actualités FO du groupe ILIAD</h3><p>Les communiqués, informations et publications des différentes sections seront réunis ici, avec un classement par entité, thème et date.</p></div><span className="news-arrow">↗</span></div></div></section>
+        <section className="section entities-section" id="droits"><div className="section-heading compact"><div><p className="eyebrow">S’INFORMER ET SE DÉFENDRE</p><h2>Vos droits.<br /><em>Vos repères.</em></h2></div><p className="section-lead">Des ressources pour mieux comprendre vos droits au travail. Les règles pouvant varier selon la société, l’établissement et les accords applicables, rapprochez-vous de vos représentants pour une réponse adaptée à votre situation.</p></div><div className="rights-grid">{rights.map((item, i) => <article className="right-card" key={item[0]}><span>0{i + 1} / REPÈRES PRATIQUES</span><h3>{item[0]}</h3><p>{item[1]}</p><a href="#contact">Poser une question <b>↗</b></a></article>)}</div></section>
+        <section className="action-section" id="agir"><div className="section"><div className="section-heading"><div><p className="eyebrow">REVENDIQUER ET AGIR</p><h2>Nos droits avancent<br /><em>par l’action collective.</em></h2></div><p className="section-lead">Les revendications FO partent du quotidien des salariés. Informer, consulter, construire des propositions et agir ensemble : chaque voix compte.</p></div><div className="action-grid">{actions.map((item, i) => <article className="action-card" key={item[0]}><span className="action-number">0{i + 1}</span><h3>{item[0]}</h3><p>{item[1]}</p><a href="#contact">Échanger avec FO <b>↗</b></a></article>)}</div></div></section>
+        <section className="section reps-section" id="representants"><div className="section-heading"><div><p className="eyebrow">À VOS CÔTÉS</p><h2>Vos représentants<br /><em>FO sur le terrain.</em></h2></div><p className="section-lead">Les interlocuteurs et les périmètres de représentation seront organisés par société et établissement. Pour préserver la confidentialité, les coordonnées personnelles ne seront pas publiées sans accord.</p></div><div className="rep-panel"><div className="rep-mark">FO</div><div><span className="news-label">BESOIN D’UN CONTACT ?</span><h3>Vous souhaitez joindre un représentant FO ?</h3><p>Précisez votre société, votre établissement et l’objet de votre demande. Nous pourrons vous orienter vers le bon interlocuteur.</p></div><a className="button button-red" href="#contact">Nous contacter <span>↗</span></a></div></section>
+        <section className="join-band" id="adherer"><div><p className="eyebrow">REJOINDRE FORCE OUVRIÈRE</p><h2>Ne restez pas seul.<br /><em>Faisons entendre votre voix.</em></h2><p>Adhérer, c’est participer à une action collective et renforcer la défense des droits des salariés.</p></div><a className="button button-light" href="#contact">Demander des informations <span>↗</span></a></section>
+        <section className="contact-section" id="contact"><div className="section contact-inner"><div><p className="eyebrow">RESTONS EN CONTACT</p><h2>Une question, une situation,<br /><em>une envie d’agir ?</em></h2></div><div className="contact-copy"><p>Écrivez-nous en indiquant votre société et votre établissement. Un contact téléphonique pourra être nécessaire pour comprendre votre demande et convenir d’un échange.</p><p className="contact-note">Les coordonnées et le formulaire sécurisé seront ajoutés lors de la mise en place de l’espace de contact.</p></div></div></section>
       </main>
-
-      <footer className="footer"><a className="footer-brand" href="#"><span>FO</span> FOCOM ILIAD</a><p>Portail syndical FO du groupe ILIAD · Projet en construction</p><span>© FOCOM ILIAD</span></footer>
+      <footer className="footer"><a className="footer-brand" href="#accueil"><img src="/focom-logo.jpg" alt="" /> FOCOM ILIAD</a><p>Portail syndical FO du groupe ILIAD · Projet en construction</p><span>© FOCOM ILIAD</span></footer>
     </div>
   )
 }
-
 export default App
