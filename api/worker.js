@@ -149,8 +149,8 @@ export default {
         if (!title || !slug) return json({ error: "Le titre est obligatoire" }, 400, corsHeaders);
         try {
           const rows = await sql`
-            INSERT INTO articles (title, slug, summary, body, author_profile_id, status, visibility, published_at)
-            VALUES (${title}, ${slug}, ${summary}, ${body}, ${profile.id}, 'draft', 'public', NULL)
+            INSERT INTO articles (title, slug, summary, body, cover_image_url, cover_image_alt, author_profile_id, status, visibility, published_at)
+            VALUES (${title}, ${slug}, ${summary}, ${body}, ${coverImageUrl || null}, ${coverImageAlt || null}, ${profile.id}, 'draft', 'public', NULL)
             RETURNING id, title, slug, summary, body, cover_image_url, cover_image_alt, status, visibility, published_at, updated_at
           `;
           return json({ article: rows[0] }, 201, corsHeaders);
@@ -177,6 +177,7 @@ export default {
         try {
           const rows = await sql`
             UPDATE articles SET title = ${title}, slug = ${slug}, summary = ${summary}, body = ${body},
+              cover_image_url = ${coverImageUrl || null}, cover_image_alt = ${coverImageAlt || null},
               status = ${status}, published_at = CASE WHEN ${status} = 'published'
                 THEN COALESCE(published_at, NOW()) ELSE NULL END
             WHERE id = ${id}
