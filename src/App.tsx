@@ -83,7 +83,7 @@ function App() {
           <div className="resource-row" id="representants"><div><span>03 / PROXIMITÉ</span><h3>Identifier vos représentants FO</h3><p>Retrouver les interlocuteurs selon votre entreprise ou établissement.</p></div><a href="#contact" aria-label="Trouver un représentant">↗</a></div>
         </section>
 
-        <section className="contact-band" id="contact"><div><p className="eyebrow">RESTONS EN CONTACT</p><h2>Une question, une situation,<br /><em>une envie d'agir ?</em></h2></div><a className="button button-light" href="mailto:contact@focom-iliad.fr">Échanger avec FO <span>↗</span></a></section>
+        <section className="contact-band" id="contact"><div><p className="eyebrow">RESTONS EN CONTACT</p><h2>Une question, une situation,<br /><em>une envie d'agir ?</em></h2></div><a className="button button-light" href="#representants">Trouver un interlocuteur FO <span>↗</span></a></section>
       </main>
 
       <footer className="footer"><a className="footer-brand" href="#"><span>FO</span> FOCOM ILIAD</a><p>Portail syndical FO du groupe ILIAD · Projet en construction</p><span>© FOCOM ILIAD</span></footer>
