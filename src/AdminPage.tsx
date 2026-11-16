@@ -8,6 +8,7 @@ type Article = {
   published_at?: string | null; updated_at?: string; author_name?: string | null;
 };
 type Stats = { articles: number; published: number; drafts: number; entities: number; profiles: number };
+type Entity = { id: number; name: string; slug: string; entity_type: string; lifecycle_status: 'active' | 'absorbed' | 'pending_confirmation'; effective_from: string | null; effective_to: string | null; absorbed_into_id: number | null; confirmation_note: string | null };
 
 const emptyArticle = { title: '', slug: '', summary: '', body: '', cover_image_url: '', cover_image_alt: '', status: 'draft' as Article['status'] };
 
@@ -39,7 +40,7 @@ function markdownPreview(markdown: string) {
 
 export default function AdminPage() {
   const [stats, setStats] = useState<Stats | null>(null);
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);\n  const [entities, setEntities] = useState<Entity[]>([]);
   const [selected, setSelected] = useState<Article | null>(null);
   const [form, setForm] = useState(emptyArticle);
   const [loading, setLoading] = useState(true);
@@ -130,6 +131,18 @@ export default function AdminPage() {
           ['Articles', stats?.articles], ['Publiés', stats?.published], ['Brouillons', stats?.drafts],
           ['Entités actives', stats?.entities], ['Comptes actifs', stats?.profiles],
         ].map(([label, value]) => <article className="admin-stat" key={label as string}><span>{label}</span><strong>{loading ? '—' : value}</strong></article>)}
+      </section>
+      <section className="admin-content admin-entity-registry">
+        <div className="admin-section-head"><div><p className="eyebrow">STRUCTURE DU GROUPE</p><h2>Référentiel des entités</h2></div><span className="admin-registry-count">{entities.length} entités</span></div>
+        <p className="admin-hint">Historique conservé pour rattacher les publications aux bonnes structures. Les dates et statuts de réorganisation sont ceux saisis dans le référentiel.</p>
+        <div className="admin-entity-list">
+          {entities.map(entity => <article className="admin-entity-row" key={entity.id}>
+            <div><strong>{entity.name}</strong><small>{entity.entity_type === 'company' ? 'Société' : entity.entity_type === 'subsidiary' ? 'Filiale' : entity.entity_type === 'ues' ? 'UES' : entity.entity_type === 'establishment' ? 'Établissement' : 'Autre'} · {entity.slug}</small></div>
+            <span className={`admin-entity-status entity-${entity.lifecycle_status}`}>{entity.lifecycle_status === 'active' ? 'Active' : entity.lifecycle_status === 'absorbed' ? 'Absorbée' : 'À confirmer'}</span>
+            <small>{entity.effective_from ? `À partir du ${new Intl.DateTimeFormat('fr-FR').format(new Date(entity.effective_from))}` : entity.effective_to ? `Jusqu’au ${new Intl.DateTimeFormat('fr-FR').format(new Date(entity.effective_to))}` : entity.confirmation_note || '—'}</small>
+          </article>)}
+          {!entities.length && <p>Aucune entité enregistrée.</p>}
+        </div>
       </section>
       <section className="admin-content">
         <div className="admin-section-head"><div><p className="eyebrow">CONTENUS ÉDITORIAUX</p><h2>{selected ? 'Modifier un article' : 'Publications'}</h2></div><button className="admin-primary" type="button" onClick={startNew}>+ Nouvel article</button></div>
