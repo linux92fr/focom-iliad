@@ -92,6 +92,41 @@ export default {
       }
     }
 
+    // Public editorial API: only published, public articles are exposed.
+    if (url.pathname === "/public/articles" && request.method === "GET") {
+      try {
+        const rows = await neon(env.DATABASE_URL)`
+          SELECT id, title, slug, summary, cover_image_url, cover_image_alt, published_at
+          FROM articles
+          WHERE status = 'published' AND visibility = 'public' AND published_at <= NOW()
+          ORDER BY published_at DESC
+          LIMIT 50
+        `;
+        return json({ articles: rows }, 200, { ...corsHeaders, "access-control-allow-origin": allowedOrigin || "*" });
+      } catch {
+        return json({ error: "Impossible de charger les actualités" }, 503, corsHeaders);
+      }
+    }
+    const publicArticleMatch = url.pathname.match(/^\\/public\\/articles\\/([^/]+)$/);
+    if (publicArticleMatch && request.method === "GET") {
+      try {
+        const slug = decodeURIComponent(publicArticleMatch[1]);
+        const rows = await neon(env.DATABASE_URL)`
+          SELECT a.id, a.title, a.slug, a.summary, a.body, a.cover_image_url, a.cover_image_alt,
+                 a.published_at, p.display_name AS author_name
+          FROM articles a
+          LEFT JOIN editorial_profiles p ON p.id = a.author_profile_id
+          WHERE a.slug = ${slug} AND a.status = 'published'
+            AND a.visibility = 'public' AND a.published_at <= NOW()
+          LIMIT 1
+        `;
+        if (!rows.length) return json({ error: "Article introuvable" }, 404, corsHeaders);
+        return json({ article: rows[0] }, 200, corsHeaders);
+      } catch {
+        return json({ error: "Impossible de charger cet article" }, 503, corsHeaders);
+      }
+    }
+
     if (url.pathname === "/admin/me" || url.pathname.startsWith("/admin/")) {
       const auth = await requireAdmin(request, env);
       if (auth.response) return json(await auth.response.json(), auth.response.status, corsHeaders);
