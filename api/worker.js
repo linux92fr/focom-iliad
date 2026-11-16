@@ -107,7 +107,7 @@ export default {
         return json({ error: "Impossible de charger les actualités" }, 503, corsHeaders);
       }
     }
-    const publicArticleMatch = url.pathname.match(/^\\/public\\/articles\\/([^/]+)$/);
+    const publicArticleMatch = url.pathname.match(/^\/public\/articles\/([^/]+)$/);
     if (publicArticleMatch && request.method === "GET") {
       try {
         const slug = decodeURIComponent(publicArticleMatch[1]);
