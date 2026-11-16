@@ -59,12 +59,17 @@ export default {
       if (!env.NEON_AUTH_BASE_URL || !env.DATABASE_URL) {
         return json({ error: "Configuration serveur incomplète" }, 503, corsHeaders);
       }
+      let payload;
       try {
         const issuer = new URL(env.NEON_AUTH_BASE_URL).origin;
-        const { payload } = await jwtVerify(authorization.slice(7), getJwks(env), { issuer });
-        if (typeof payload.sub !== "string" || !payload.sub) {
-          return json({ error: "Jeton invalide" }, 401, corsHeaders);
-        }
+        ({ payload } = await jwtVerify(authorization.slice(7), getJwks(env), { issuer }));
+      } catch {
+        return json({ error: "Jeton non valide", stage: "jwt_verification" }, 401, corsHeaders);
+      }
+      if (typeof payload.sub !== "string" || !payload.sub) {
+        return json({ error: "Identifiant utilisateur absent du jeton", stage: "jwt_subject" }, 401, corsHeaders);
+      }
+      try {
         const sql = neon(env.DATABASE_URL);
         const rows = await sql`
           SELECT id, display_name, global_role, is_active
@@ -74,7 +79,7 @@ export default {
         `;
         const profile = rows[0];
         if (!profile || !profile.is_active || profile.global_role !== "admin") {
-          return json({ error: "Accès administrateur refusé" }, 403, corsHeaders);
+          return json({ error: "Accès administrateur refusé", stage: "profile_or_role" }, 403, corsHeaders);
         }
         return json({ authorized: true, profile: {
           id: profile.id,
@@ -82,7 +87,7 @@ export default {
           role: profile.global_role
         } }, 200, corsHeaders);
       } catch {
-        return json({ error: "Jeton invalide ou vérification indisponible" }, 401, corsHeaders);
+        return json({ error: "Vérification du profil indisponible", stage: "database_lookup" }, 503, corsHeaders);
       }
     }
 
