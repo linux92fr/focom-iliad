@@ -51,3 +51,16 @@ Il crée les tables :
 Cette migration crée uniquement la structure : aucune donnée personnelle ni compte administrateur n'est ajouté.
 
 **Important :** les routes de lecture/écriture métier ne sont pas encore exposées. Garder l'accès PostgreSQL exclusivement côté Worker. Avant d'ouvrir l'administration, ajouter l'authentification et les contrôles d'autorisation côté serveur, puis définir les règles de visibilité des contenus réservés.
+
+## Authentification et contrôle administrateur
+
+Le Worker expose `GET /admin/me`. Il exige un JWT Neon Managed Auth dans `Authorization: Bearer <token>`, vérifie sa signature via JWKS et son issuer, puis vérifie en base le profil `editorial_profiles` correspondant au claim `sub`. Seul un profil actif avec `global_role = 'admin'` reçoit `200`; un utilisateur sans rôle admin reçoit `403`.
+
+Variables à configurer dans Cloudflare Worker > Settings > Variables and Secrets :
+
+- Secret `DATABASE_URL` : chaîne Neon PostgreSQL poolée (déjà utilisée pour /health/db).
+- Variable `CORS_ORIGIN` : `https://focom-iliad.fr`.
+- Variable `NEON_AUTH_BASE_URL` : URL de base Better Auth affichée par Neon, avec son chemin complet.
+- Variable `NEON_AUTH_JWKS_URL` : URL JWKS fournie par les paramètres Neon Auth / documentation du projet. Ne pas la deviner ni la construire à partir de l'URL de base.
+
+Le Worker n'accorde aucun rôle à partir des données envoyées par le navigateur. Le rôle provient exclusivement de la base après validation cryptographique du JWT. Le endpoint ne fournit pour l'instant qu'une vérification de l'identité et du rôle ; les futures routes métier devront appeler le même contrôle avant toute lecture ou écriture protégée.
