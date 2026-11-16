@@ -12,7 +12,7 @@ function SessionStatus() {
 
 function SessionStatusContent() {
   const { data, isPending, error } = authClient!.useSession();
-  const [adminStatus, setAdminStatus] = useState<'checking' | 'admin' | 'denied' | 'unavailable'>('checking');
+  const [adminStatus, setAdminStatus] = useState<'checking' | 'admin' | 'denied' | 'jwt-error' | 'profile-error' | 'database-error' | 'token-error' | 'unavailable'>('checking');
 
   useEffect(() => {
     let cancelled = false;
@@ -26,13 +26,22 @@ function SessionStatusContent() {
       try {
         const tokenResult = await authClient!.token();
         const token = tokenResult.data?.token;
-        if (!token) throw new Error('Jeton de session indisponible');
+        if (!token) { setAdminStatus('token-error'); return; }
         const baseUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
         const response = await fetch(`${baseUrl}/admin/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (cancelled) return;
-        setAdminStatus(response.ok ? 'admin' : response.status === 403 ? 'denied' : 'unavailable');
+        if (response.ok) {
+          setAdminStatus('admin');
+        } else {
+          const body = await response.json().catch(() => ({}));
+          if (response.status === 403) setAdminStatus('denied');
+          else if (body.stage === 'jwt_verification' || body.stage === 'jwt_subject') setAdminStatus('jwt-error');
+          else if (body.stage === 'profile_or_role') setAdminStatus('profile-error');
+          else if (body.stage === 'database_lookup') setAdminStatus('database-error');
+          else setAdminStatus('unavailable');
+        }
       } catch {
         if (!cancelled) setAdminStatus('unavailable');
       }
@@ -49,6 +58,10 @@ function SessionStatusContent() {
       <span>Connecté : <strong>{data.user.name || data.user.email}</strong></span>
       {adminStatus === 'admin' && <strong>Administrateur</strong>}
       {adminStatus === 'denied' && <span>Compte membre</span>}
+      {adminStatus === 'jwt-error' && <span>Jeton Neon non reconnu par l’API</span>}
+      {adminStatus === 'profile-error' && <span>Profil administrateur non reconnu</span>}
+      {adminStatus === 'database-error' && <span>Erreur de lecture du profil administrateur</span>}
+      {adminStatus === 'token-error' && <span>Jeton de session non fourni par Neon</span>}
       {adminStatus === 'checking' && <span>Vérification des droits…</span>}
       {adminStatus === 'unavailable' && <span>Droits administrateur non vérifiés</span>}
       <button type="button" onClick={() => authClient!.signOut()}>Déconnexion</button>
