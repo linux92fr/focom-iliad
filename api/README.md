@@ -1,33 +1,28 @@
-# FOCOM ILIAD API
+# FOCOM ILIAD API — Cloudflare Worker
 
-Backend Node.js isolé du site statique React/Vite.
+API HTTP déployée sur Cloudflare Workers et connectée à Neon PostgreSQL.
 
 ## Endpoints initiaux
 
-- `GET /health` : vérifie que le service HTTP répond.
-- `GET /health/db` : vérifie la connexion PostgreSQL Neon.
+- `GET /health` : contrôle HTTP.
+- `GET /health/db` : contrôle de connexion Neon.
 
-Les réponses ne révèlent jamais la chaîne de connexion ni les détails internes d'une erreur SQL.
+## Secrets et variables
 
-## Variables d'environnement
+Dans Cloudflare > Worker > Settings > Variables and Secrets :
 
-- `DATABASE_URL` : chaîne de connexion Neon **poolée** (hôte contenant `-pooler`), conservée uniquement dans les variables secrètes du service backend.
-- `CORS_ORIGIN` : origine exacte du frontend autorisée, par exemple `https://focom-iliad.fr`.
-- `PORT` : fourni automatiquement par l'hébergeur.
+- Secret `DATABASE_URL` : chaîne de connexion Neon poolée (host contenant `-pooler`).
+- Variable `CORS_ORIGIN` : origine exacte du site, par exemple `https://focom-iliad.fr`.
 
-Ne jamais préfixer `DATABASE_URL` par `VITE_` et ne jamais la placer dans le code frontend.
+Ne jamais utiliser de préfixe `VITE_` pour le secret de base. Ne pas committer de vraie chaîne de connexion.
 
-## Déploiement Sevalla
+## Déploiement depuis GitHub
 
-Créer une nouvelle application Node.js distincte du Static Site actuel, reliée au même dépôt GitHub :
+Connecter le dépôt `linux92fr/focom-iliad` à Cloudflare Workers Builds.
+Configurer le répertoire racine sur `api`, puis utiliser le déploiement Wrangler depuis ce répertoire.
 
-- Répertoire / Root directory : `api`
-- Build command : aucune (dépendances installées par `npm install`)
-- Start command : `npm start`
-- Port : variable d'environnement `PORT` fournie par Sevalla.
+Le fichier `wrangler.jsonc` déclare l'entrée `worker.js`. Les secrets doivent être ajoutés dans le tableau de bord Cloudflare avant de tester `/health/db`.
 
-Configurer les variables secrètes avant le premier déploiement.
+## Sécurité et périmètre
 
-## Périmètre
-
-Cette première version est volontairement limitée aux contrôles de santé. Elle ne contient pas encore d'authentification, d'API de contenu ni de tables métier. Ces éléments seront ajoutés après validation de la connexion Neon et définition des règles d'accès.
+Cette première version ne donne accès à aucune donnée métier. Elle vérifie seulement le service et la connexion SQL. Les routes de contenu, l'authentification, les contrôles d'accès et les migrations SQL seront ajoutés séparément, avec validation des règles d'accès avant toute exposition publique.
