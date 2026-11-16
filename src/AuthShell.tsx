@@ -56,7 +56,7 @@ function SessionStatusContent() {
   return (
     <div className="session-status">
       <span>Connecté : <strong>{data.user.name || data.user.email}</strong></span>
-      {adminStatus === 'admin' && <strong>Administrateur</strong>}
+      {adminStatus === 'admin' && <><strong>Administrateur</strong><Link to="/admin">Administration</Link></>}
       {adminStatus === 'denied' && <span>Compte membre</span>}
       {adminStatus === 'jwt-error' && <span>Jeton Neon non reconnu par l’API</span>}
       {adminStatus === 'profile-error' && <span>Profil administrateur non reconnu</span>}
@@ -242,6 +242,7 @@ function AuthApplication() {
       <SessionStatus />
       <Routes>
         <Route path="/auth/:pathname" element={<AuthPage />} />
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="*" element={<Portal />} />
       </Routes>
     </NeonAuthUIProvider>
