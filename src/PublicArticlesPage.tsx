@@ -1,3 +1,4 @@
+import { LegalFooter } from './LegalPages';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -96,5 +97,6 @@ export default function PublicArticlesPage() {
         )
       }
     </main>
+    <LegalFooter />
   );
 }
