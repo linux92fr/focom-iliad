@@ -26,3 +26,28 @@ Le fichier `wrangler.jsonc` déclare l'entrée `worker.js`. Les secrets doivent 
 ## Sécurité et périmètre
 
 Cette première version ne donne accès à aucune donnée métier. Elle vérifie seulement le service et la connexion SQL. Les routes de contenu, l'authentification, les contrôles d'accès et les migrations SQL seront ajoutés séparément, avec validation des règles d'accès avant toute exposition publique.
+
+## Première migration de base de données
+
+Le schéma initial est dans `migrations/202611160001_initial_portal_schema.sql`.
+
+Il crée les tables :
+- `entities` : sociétés, filiales, UES et établissements, avec hiérarchie facultative.
+- `categories` : rubriques éditoriales.
+- `editorial_profiles` et `editorial_profile_entities` : profils éditoriaux et périmètres d'intervention, prêts à être reliés à l'identifiant Better Auth.
+- `articles`, `article_entities`, `article_categories` : actualités et leurs rattachements.
+- `resources` : accords, fiches pratiques, documents et liens.
+- `campaigns` et `campaign_entities` : campagnes et entités concernées.
+- `schema_migrations` : suivi de la migration appliquée.
+
+### Application manuelle initiale
+
+1. Ouvrir le projet Neon `focom-iliad`.
+2. Ouvrir le SQL Editor sur la branche `production` et la base par défaut.
+3. Copier le contenu complet du fichier de migration depuis GitHub.
+4. Exécuter le script une seule fois.
+5. Vérifier que la requête se termine sans erreur et que la table `schema_migrations` contient `202611160001_initial_portal_schema`.
+
+Cette migration crée uniquement la structure : aucune donnée personnelle ni compte administrateur n'est ajouté.
+
+**Important :** les routes de lecture/écriture métier ne sont pas encore exposées. Garder l'accès PostgreSQL exclusivement côté Worker. Avant d'ouvrir l'administration, ajouter l'authentification et les contrôles d'autorisation côté serveur, puis définir les règles de visibilité des contenus réservés.
