@@ -24,6 +24,11 @@ export function SiteUtilities() {
       setBanner(!saved);
     } catch { setBanner(false); }
   }, [location.pathname]);
+  useEffect(() => {
+    const open = () => openCookieSettings();
+    window.addEventListener('focom-open-cookie-settings', open);
+    return () => window.removeEventListener('focom-open-cookie-settings', open);
+  }, []);
 
   function saveConsent(analyticsChoice: boolean) {
     const value: Consent = { essential: true, analytics: analyticsChoice, savedAt: new Date().toISOString() };
