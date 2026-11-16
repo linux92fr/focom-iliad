@@ -142,7 +142,7 @@ export default {
         try {
           const [categories, entities] = await Promise.all([
             sql`SELECT id, name, slug FROM categories WHERE is_active = TRUE ORDER BY sort_order, name`,
-            sql`SELECT id, name, slug, entity_type FROM entities WHERE is_active = TRUE ORDER BY name`,
+            sql`SELECT id, name, slug, entity_type, lifecycle_status, effective_from, effective_to, absorbed_into_id, confirmation_note FROM entities ORDER BY name`,
           ]);
           return json({ categories, entities }, 200, corsHeaders);
         } catch {
