@@ -1,3 +1,4 @@
+import { LegalFooter } from './LegalPages';
 import { useEffect, useState } from 'react'
 
 const navItems = [
@@ -83,7 +84,7 @@ function App() {
         <section className="join-band" id="adherer"><div><p className="eyebrow">REJOINDRE FORCE OUVRIÈRE</p><h2>Ne restez pas seul.<br /><em>Faisons entendre votre voix.</em></h2><p>Adhérer, c’est participer à une action collective et renforcer la défense des droits des salariés.</p></div><a className="button button-light" href="#contact">Demander des informations <span>↗</span></a></section>
         <section className="contact-section" id="contact"><div className="section contact-inner"><div><p className="eyebrow">RESTONS EN CONTACT</p><h2>Une question, une situation,<br /><em>une envie d’agir ?</em></h2></div><div className="contact-copy"><p>Écrivez-nous en indiquant votre société et votre établissement. Un contact téléphonique pourra être nécessaire pour comprendre votre demande et convenir d’un échange.</p><p className="contact-note">Les coordonnées et le formulaire sécurisé seront ajoutés lors de la mise en place de l’espace de contact.</p></div></div></section>
       </main>
-      <footer className="footer"><a className="footer-brand" href="#accueil"><img src="/focom-logo.jpg" alt="" /> FOCOM ILIAD</a><p>Portail syndical FO du groupe ILIAD · Projet en construction</p><span>© FOCOM ILIAD</span></footer>
+      <LegalFooter />
     </div>
   )
 }
