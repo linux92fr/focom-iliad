@@ -40,7 +40,8 @@ function markdownPreview(markdown: string) {
 
 export default function AdminPage() {
   const [stats, setStats] = useState<Stats | null>(null);
-  const [articles, setArticles] = useState<Article[]>([]);\n  const [entities, setEntities] = useState<Entity[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [entities, setEntities] = useState<Entity[]>([]);
   const [selected, setSelected] = useState<Article | null>(null);
   const [form, setForm] = useState(emptyArticle);
   const [loading, setLoading] = useState(true);
