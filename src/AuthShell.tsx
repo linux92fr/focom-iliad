@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { BrowserRouter, Link, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import { NeonAuthUIProvider } from '@neondatabase/auth/react/ui';
-import { authClient, isAuthConfigured } from './auth-client';
+import { authClient, getNeonAccessToken, isAuthConfigured } from './auth-client';
 import Portal from './App';
 
 function SessionStatus() {
@@ -24,8 +24,7 @@ function SessionStatusContent() {
         return;
       }
       try {
-        const tokenResult = await authClient!.token();
-        const token = tokenResult.data?.token;
+        const token = await getNeonAccessToken();
         if (!token) { setAdminStatus('token-error'); return; }
         const baseUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
         const response = await fetch(`${baseUrl}/admin/me`, {
