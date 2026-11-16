@@ -225,3 +225,14 @@
 .legal-page .legal-provider-card>span{display:block!important;font-size:12px!important;line-height:1.6;color:#536477!important}
 .legal-page .legal-provider-card>a{display:inline-block!important;font-size:11px!important;font-weight:800!important;color:var(--navy)!important;text-decoration:underline!important;white-space:nowrap}
 @media(max-width:650px){.legal-page .legal-info-grid{grid-template-columns:1fr}.legal-page .legal-provider-card{grid-template-columns:1fr!important;gap:7px!important}.legal-page .legal-provider-card>a{white-space:normal}}
+
+
+/* Page confidentialité : modes de participation et lisibilité */
+.legal-page .privacy-mode-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}
+.legal-page .privacy-mode-card{padding:20px;background:#f5f7fa;border:1px solid #e3e9f0;border-radius:12px}
+.legal-page .privacy-mode-label{display:inline-block;margin-bottom:9px;padding:5px 9px;border-radius:20px;background:#e8eef7;color:#263f60;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.legal-page .privacy-mode-card h3{margin:0 0 9px;color:var(--navy);font:800 15px/1.4 Manrope,sans-serif}
+.legal-page .privacy-mode-card p{margin:0;font-size:12px;line-height:1.7}
+.legal-page section ul{margin:12px 0;padding-left:22px;color:#536477;font-size:13px;line-height:1.85}
+.legal-page section li{padding-left:4px;margin:5px 0}
+@media(max-width:650px){.legal-page .privacy-mode-grid{grid-template-columns:1fr}}
