@@ -197,3 +197,17 @@
   overflow-wrap:normal;
   word-break:normal;
 }
+
+
+/* Mentions légales : identité et prestataires */
+.legal-info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}
+.legal-info-grid>div{display:flex;flex-direction:column;gap:6px;padding:17px 18px;background:#f5f7fa;border:1px solid #e5eaf0;border-radius:12px}
+.legal-info-grid span,.legal-provider-list>div>strong{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#77869a}
+.legal-info-grid strong{font-size:14px;color:var(--navy);line-height:1.5}
+.legal-info-grid small{font-size:11px;line-height:1.6;color:#64748b}
+.legal-provider-list{display:grid;gap:10px;margin:18px 0}
+.legal-provider-list>div{display:grid;grid-template-columns:190px 1fr auto;align-items:center;gap:14px;padding:15px 17px;background:#f5f7fa;border:1px solid #e5eaf0;border-radius:12px}
+.legal-provider-list span{font-size:12px;line-height:1.6;color:#536477}
+.legal-provider-list a{font-size:11px;font-weight:700;color:var(--navy);text-decoration:underline;white-space:nowrap}
+.legal-note{font-size:11px!important;color:#77869a!important;font-style:italic}
+@media(max-width:650px){.legal-info-grid{grid-template-columns:1fr}.legal-provider-list>div{grid-template-columns:1fr;gap:7px}.legal-provider-list a{white-space:normal}}
