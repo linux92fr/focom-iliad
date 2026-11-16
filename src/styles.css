@@ -188,3 +188,12 @@
 .legal-page section p{font-size:13px;line-height:1.85;color:#536477}
 .legal-warning{padding:15px 18px;background:#fff4df;border-left:3px solid #c58a1a;color:#76500b;font-size:11px;line-height:1.7;margin-top:26px}
 @media(max-width:760px){.footer .legal-footer-links{gap:12px}.cookie-banner{left:10px;right:10px;bottom:10px;display:block;padding:17px}.cookie-banner-actions{margin-top:14px}.cookie-banner-actions button{flex:1}.cookie-settings-trigger{right:16px;bottom:82px}.back-to-top{right:16px;bottom:18px;width:48px;height:48px}.legal-page{padding:40px 20px 70px}}
+
+
+/* Fix legibility of section headings on legal pages */
+.legal-page section h2{
+  letter-spacing:normal;
+  line-height:1.4;
+  overflow-wrap:normal;
+  word-break:normal;
+}
