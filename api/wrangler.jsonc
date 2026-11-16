@@ -6,5 +6,10 @@
   "workers_dev": true,
   "observability": {
     "enabled": true
+  },
+  "vars": {
+    "CORS_ORIGIN": "https://focom-iliad.fr",
+    "NEON_AUTH_BASE_URL": "https://ep-royal-wind-basf5tmh.neonauth.c-8.eu-central-1.aws.neon.tech/neondb/auth",
+    "NEON_AUTH_JWKS_URL": "https://ep-royal-wind-basf5tmh.neonauth.c-8.eu-central-1.aws.neon.tech/neondb/auth/.well-known/jwks.json"
   }
 }
