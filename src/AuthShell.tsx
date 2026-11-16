@@ -35,8 +35,6 @@ function AuthApplication() {
     <NeonAuthUIProvider
       authClient={authClient}
       navigate={({ to, replace }) => {
-        if (replace) window.history.replaceState({}, '', to);
-        else window.history.pushState({}, '', to);
         navigate(to, { replace });
       }}
       Link={({ href, children }) => <Link to={href}>{children}</Link>}
