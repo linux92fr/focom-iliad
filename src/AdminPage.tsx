@@ -67,9 +67,10 @@ export default function AdminPage() {
   const refresh = useCallback(async () => {
     setLoading(true); setError('');
     try {
-      const [dashboard, listing] = await Promise.all([api('/admin/dashboard'), api('/admin/articles')]);
+      const [dashboard, listing, registry] = await Promise.all([api('/admin/dashboard'), api('/admin/articles'), api('/admin/editorial-options')]);
       setStats(dashboard.stats);
       setArticles(listing.articles);
+      setEntities(registry.entities || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Chargement impossible.');
     } finally { setLoading(false); }
