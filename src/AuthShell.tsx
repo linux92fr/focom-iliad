@@ -53,8 +53,8 @@ function AuthApplication() {
   return (
     <NeonAuthUIProvider
       authClient={authClient}
-      navigate={({ to, replace }) => {
-        navigate(to, { replace });
+      navigate={(to, options) => {
+        navigate(to, options);
       }}
       Link={({ href, children }) => <Link to={href}>{children}</Link>}
       redirectTo="/"
