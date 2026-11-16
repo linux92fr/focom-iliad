@@ -181,7 +181,7 @@ export default {
               status = ${status}, published_at = CASE WHEN ${status} = 'published'
                 THEN COALESCE(published_at, NOW()) ELSE NULL END
             WHERE id = ${id}
-            RETURNING id, title, slug, summary, body, status, visibility, published_at, updated_at
+            RETURNING id, title, slug, summary, body, cover_image_url, cover_image_alt, status, visibility, published_at, updated_at
           `;
           if (!rows.length) return json({ error: "Article introuvable" }, 404, corsHeaders);
           return json({ article: rows[0] }, 200, corsHeaders);
