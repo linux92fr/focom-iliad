@@ -211,3 +211,17 @@
 .legal-provider-list a{font-size:11px;font-weight:700;color:var(--navy);text-decoration:underline;white-space:nowrap}
 .legal-note{font-size:11px!important;color:#77869a!important;font-style:italic}
 @media(max-width:650px){.legal-info-grid{grid-template-columns:1fr}.legal-provider-list>div{grid-template-columns:1fr;gap:7px}.legal-provider-list a{white-space:normal}}
+
+
+/* Correctif renforcé : cartes des mentions légales */
+.legal-page .legal-info-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:22px 0 4px}
+.legal-page .legal-info-card{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:7px!important;min-width:0;padding:18px!important;background:#f5f7fa!important;border:1px solid #e3e9f0!important;border-radius:12px!important}
+.legal-page .legal-info-card>span{display:block!important;font-size:10px!important;font-weight:800!important;letter-spacing:.08em;text-transform:uppercase;color:#77869a!important}
+.legal-page .legal-info-card>strong{display:block!important;font-size:14px!important;line-height:1.5;color:var(--navy)!important}
+.legal-page .legal-info-card>small{display:block!important;font-size:11px!important;line-height:1.6;color:#64748b!important}
+.legal-page .legal-provider-list{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;margin:20px 0}
+.legal-page .legal-provider-card{display:grid!important;grid-template-columns:190px minmax(0,1fr) auto!important;align-items:center!important;gap:16px!important;padding:17px 18px!important;background:#f5f7fa!important;border:1px solid #e3e9f0!important;border-radius:12px!important}
+.legal-page .legal-provider-card>strong{display:block!important;font-size:12px!important;line-height:1.5;color:var(--navy)!important}
+.legal-page .legal-provider-card>span{display:block!important;font-size:12px!important;line-height:1.6;color:#536477!important}
+.legal-page .legal-provider-card>a{display:inline-block!important;font-size:11px!important;font-weight:800!important;color:var(--navy)!important;text-decoration:underline!important;white-space:nowrap}
+@media(max-width:650px){.legal-page .legal-info-grid{grid-template-columns:1fr}.legal-page .legal-provider-card{grid-template-columns:1fr!important;gap:7px!important}.legal-page .legal-provider-card>a{white-space:normal}}
