@@ -4,6 +4,7 @@ import { BrowserRouter, Link, Route, Routes, useNavigate, useParams } from 'reac
 import { NeonAuthUIProvider } from '@neondatabase/auth/react/ui';
 import { authClient, getNeonAccessToken, isAuthConfigured } from './auth-client';
 import Portal from './App';
+import AdminPage from './AdminPage';
 
 function SessionStatus() {
   if (!authClient) return null;
