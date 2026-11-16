@@ -41,7 +41,8 @@ function markdownPreview(markdown: string) {
 export default function AdminPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [articles, setArticles] = useState<Article[]>([]);
-  const [entities, setEntities] = useState<Entity[]>([]);\n  const [categories, setCategories] = useState<Category[]>([]);
+  const [entities, setEntities] = useState<Entity[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [selected, setSelected] = useState<Article | null>(null);
   const [form, setForm] = useState(emptyArticle);
   const [loading, setLoading] = useState(true);
@@ -71,7 +72,8 @@ export default function AdminPage() {
       const [dashboard, listing, registry] = await Promise.all([api('/admin/dashboard'), api('/admin/articles'), api('/admin/editorial-options')]);
       setStats(dashboard.stats);
       setArticles(listing.articles);
-      setEntities(registry.entities || []);\n      setCategories(registry.categories || []);
+      setEntities(registry.entities || []);
+      setCategories(registry.categories || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Chargement impossible.');
     } finally { setLoading(false); }
