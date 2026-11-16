@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { BrowserRouter, Link, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import { NeonAuthUIProvider } from '@neondatabase/auth/react/ui';
@@ -12,12 +12,44 @@ function SessionStatus() {
 
 function SessionStatusContent() {
   const { data, isPending, error } = authClient!.useSession();
+  const [adminStatus, setAdminStatus] = useState<'checking' | 'admin' | 'denied' | 'unavailable'>('checking');
+
+  useEffect(() => {
+    let cancelled = false;
+    async function checkAdmin() {
+      if (!data?.user) return;
+      const apiUrl = import.meta.env.VITE_API_URL?.trim();
+      if (!apiUrl) {
+        setAdminStatus('unavailable');
+        return;
+      }
+      try {
+        const tokenResult = await authClient!.token();
+        const token = tokenResult.data?.token;
+        if (!token) throw new Error('Jeton de session indisponible');
+        const response = await fetch(`${apiUrl.replace(/\\/$/, '')}/admin/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (cancelled) return;
+        setAdminStatus(response.ok ? 'admin' : response.status === 403 ? 'denied' : 'unavailable');
+      } catch {
+        if (!cancelled) setAdminStatus('unavailable');
+      }
+    }
+    if (data?.user) checkAdmin();
+    return () => { cancelled = true; };
+  }, [data?.user?.id]);
+
   if (isPending) return <div className="session-status">Vérification de la session…</div>;
   if (error) return <div className="session-status">État de connexion momentanément indisponible.</div>;
   if (!data?.user) return null;
   return (
     <div className="session-status">
       <span>Connecté : <strong>{data.user.name || data.user.email}</strong></span>
+      {adminStatus === 'admin' && <strong>Administrateur</strong>}
+      {adminStatus === 'denied' && <span>Compte membre</span>}
+      {adminStatus === 'checking' && <span>Vérification des droits…</span>}
+      {adminStatus === 'unavailable' && <span>Droits administrateur non vérifiés</span>}
       <button type="button" onClick={() => authClient!.signOut()}>Déconnexion</button>
     </div>
   );
