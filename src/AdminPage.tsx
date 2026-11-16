@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import { authClient, getNeonAccessToken } from './auth-client';
 
 type Article = {
-  id: number; title: string; slug: string; summary: string; body: string;
+  id: number; title: string; slug: string; summary: string; body: string; cover_image_url?: string | null; cover_image_alt?: string | null;
   status: 'draft' | 'review' | 'published' | 'archived';
   published_at?: string | null; updated_at?: string; author_name?: string | null;
 };
 type Stats = { articles: number; published: number; drafts: number; entities: number; profiles: number };
 
-const emptyArticle = { title: '', slug: '', summary: '', body: '', status: 'draft' as Article['status'] };
+const emptyArticle = { title: '', slug: '', summary: '', body: '', cover_image_url: '', cover_image_alt: '', status: 'draft' as Article['status'] };
 
 function escapeHtml(value: string) {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -23,6 +23,7 @@ function markdownPreview(markdown: string) {
     .replace(/^# (.+)$/gm, '<h1>$1</h1>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/!\[(.*?)\]\((https:\/\/[^\s)]+)\)/g, '<img src="$2" alt="$1" loading="lazy" />')
     .replace(/\[(.+?)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
     .replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
   html = html.replace(/^(?:- .+(?:\n|$))+?/gm, block =>
@@ -80,7 +81,7 @@ export default function AdminPage() {
   }
   function startEdit(article: Article) {
     setSelected(article);
-    setForm({ title: article.title, slug: article.slug, summary: article.summary || '', body: article.body || '', status: article.status });
+    setForm({ title: article.title, slug: article.slug, summary: article.summary || '', body: article.body || '', cover_image_url: article.cover_image_url || '', cover_image_alt: article.cover_image_alt || '', status: article.status });
     setNotice(''); setError(''); setPreview(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -107,7 +108,7 @@ export default function AdminPage() {
       });
       setNotice(selected ? 'Article mis à jour.' : 'Brouillon créé.');
       setSelected(result.article);
-      setForm({ title: result.article.title, slug: result.article.slug, summary: result.article.summary || '', body: result.article.body || '', status: result.article.status });
+      setForm({ title: result.article.title, slug: result.article.slug, summary: result.article.summary || '', body: result.article.body || '', cover_image_url: result.article.cover_image_url || '', cover_image_alt: result.article.cover_image_alt || '', status: result.article.status });
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Enregistrement impossible.');
@@ -147,6 +148,7 @@ export default function AdminPage() {
             <label>Titre<input required maxLength={180} value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} /></label>
             <label>Slug (adresse de l’article)<input value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} placeholder="genere-depuis-le-titre" /></label>
             <label>Résumé<textarea rows={2} maxLength={500} value={form.summary} onChange={e => setForm({ ...form, summary: e.target.value })} /></label>
+            <div className="admin-cover-fields"><label>Image de couverture (URL HTTPS)<input type="url" placeholder="https://…" value={form.cover_image_url} onChange={e => setForm({ ...form, cover_image_url: e.target.value })} /></label><label>Texte alternatif de l’image<input maxLength={250} placeholder="Description de l’image" value={form.cover_image_alt} onChange={e => setForm({ ...form, cover_image_alt: e.target.value })} /></label>{form.cover_image_url && <img className="admin-cover-preview" src={form.cover_image_url} alt={form.cover_image_alt || 'Aperçu de la couverture'} />}</div>
             <div className="admin-editor-toolbar">
               <span>MISE EN FORME</span>
               <button type="button" onClick={() => insertMarkdown('**', '**', 'texte en gras')} title="Gras"><strong>G</strong></button>
@@ -154,12 +156,13 @@ export default function AdminPage() {
               <button type="button" onClick={() => insertMarkdown('## ', '', 'Titre de section')} title="Titre de section">H2</button>
               <button type="button" onClick={() => insertMarkdown('- ', '', 'Élément de liste')} title="Liste">• Liste</button>
               <button type="button" onClick={() => insertMarkdown('[', '](https://)', 'texte du lien')} title="Lien">Lien</button>
+              <button type="button" onClick={() => insertMarkdown('![', '](https://adresse-image)', 'description image')} title="Insérer une image">Image</button>
               <button type="button" onClick={() => insertMarkdown('> ', '', 'Citation')} title="Citation">Citation</button>
               <button type="button" className={preview ? 'preview-active' : ''} onClick={() => setPreview(!preview)}>{preview ? 'Éditer' : 'Prévisualiser'}</button>
             </div>
             {preview ? (
               <div className="admin-preview-wrap">
-                <div className="admin-preview-meta"><span>APERÇU DE PUBLICATION</span><strong>{form.title || 'Titre de l’article'}</strong>{form.summary && <p>{form.summary}</p>}</div>
+                <div className="admin-preview-meta"><span>APERÇU DE PUBLICATION</span><strong>{form.title || 'Titre de l’article'}</strong>{form.summary && <p>{form.summary}</p>}{form.cover_image_url && <img className="admin-preview-cover" src={form.cover_image_url} alt={form.cover_image_alt || ''} />}</div>
                 <div className="admin-markdown-preview" dangerouslySetInnerHTML={markdownPreview(form.body)} />
               </div>
             ) : (
