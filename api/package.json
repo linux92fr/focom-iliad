@@ -1,15 +1,16 @@
 {
-  "name": "focom-iliad-api",
+  "name": "focom-iliad-worker",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=20"
-  },
   "scripts": {
-    "start": "node server.js"
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.2.1"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
   }
 }
