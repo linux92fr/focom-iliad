@@ -38,7 +38,8 @@ function App() {
         <nav className={menuOpen ? 'nav nav-open' : 'nav'}>
           {navItems.map(([label, href]) => <a key={href} href={href} onClick={closeMenu}>{label}</a>)}
           <a href="#adherer" onClick={closeMenu}>Adhérer</a>
-          <a className="contact-link" href="#contact" onClick={closeMenu}>Nous contacter <span>↗</span></a>
+          <a href="/auth/sign-in" onClick={closeMenu}>Connexion</a>
+          <a className="contact-link" href="/auth/sign-up" onClick={closeMenu}>Créer un compte <span>↗</span></a>
         </nav>
       </header>
       <main>
