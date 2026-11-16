@@ -130,3 +130,17 @@
 .home-news-card .public-read-more{margin-top:auto}
 @media(max-width:850px){.home-news-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.home-news-grid{grid-template-columns:1fr}.home-news-card>a:first-child img{height:210px}.home-news-card-content{padding:18px}}
+
+/* Entity lifecycle registry */
+.admin-registry-count{font-size:11px;color:var(--muted);font-weight:700}
+.admin-entity-list{margin-top:18px;border:1px solid var(--line);background:#fff}
+.admin-entity-row{display:grid;grid-template-columns:minmax(180px,1.4fr) 130px minmax(150px,1fr);gap:16px;align-items:center;padding:13px 16px;border-bottom:1px solid var(--line)}
+.admin-entity-row:last-child{border-bottom:0}
+.admin-entity-row strong,.admin-entity-row small{display:block}
+.admin-entity-row strong{font-size:12px;color:var(--navy);margin-bottom:4px}
+.admin-entity-row small{font-size:10px;color:var(--muted);overflow-wrap:anywhere}
+.admin-entity-status{justify-self:start;padding:5px 8px;border-radius:3px;font-size:9px;font-weight:700}
+.entity-active{background:#e8f5ed;color:#18794e}
+.entity-absorbed{background:#f1edf5;color:#70528b}
+.entity-pending_confirmation{background:#fff4df;color:#9a6700}
+@media(max-width:600px){.admin-entity-row{grid-template-columns:1fr auto;gap:8px}.admin-entity-row>small{grid-column:1/-1}}
