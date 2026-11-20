@@ -236,3 +236,9 @@
 .legal-page section ul{margin:12px 0;padding-left:22px;color:#536477;font-size:13px;line-height:1.85}
 .legal-page section li{padding-left:4px;margin:5px 0}
 @media(max-width:650px){.legal-page .privacy-mode-grid{grid-template-columns:1fr}}
+
+/* Section verrouillée FO FREE DISTRIBUTION */
+.section-callout-locked{background:#fafbfc;border:1px dashed #d8dee6}
+.locked-badge{display:inline-flex;align-items:center;gap:9px;padding:14px 18px;background:#fff;border:1px solid var(--line);color:var(--navy);font-size:12px;font-weight:700;white-space:nowrap}
+.locked-badge svg{color:var(--red)}
+@media(max-width:760px){.locked-badge{white-space:normal}}

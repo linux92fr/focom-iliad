@@ -1,4 +1,5 @@
 import { LegalFooter } from './LegalPages';
+import { Lock } from 'lucide-react';
 import { useEffect, useState } from 'react'
 
 const navItems = [
@@ -76,6 +77,14 @@ function App() {
           <div className="section-heading"><div><p className="eyebrow">UN GROUPE, DES RÉALITÉS</p><h2>Une représentation<br /><em>au plus près du terrain.</em></h2></div><p className="section-lead">Le groupe ILIAD rassemble des activités, des métiers et des équipes aux réalités diverses. FO souhaite rendre l’information syndicale plus accessible et faciliter les échanges entre les salariés et leurs représentants.</p></div>
           <div className="topic-grid">{entities.map((item, i) => <article className="topic-card" key={item.title}><span className="topic-number">0{i + 1}</span><span className="topic-icon">{['◎', '◇', '⌘', '▦'][i]}</span><h3>{item.title}</h3><p>{item.text}</p><a className="card-arrow" href="#representants">En savoir plus <b>↗</b></a></article>)}</div>
           <div className="section-callout"><div><span className="news-label">UNE SECTION DU PORTAIL</span><h3>FOCOM UES ILIAD</h3><p>Retrouvez l’espace dédié à la représentation FO de l’UES ILIAD. Ce site conserve son fonctionnement et son adresse propres.</p></div><a className="button button-red" href="https://focomues-iliad.fr/" target="_blank" rel="noreferrer">Accéder à FOCOM UES ILIAD <span>↗</span></a></div>
+          <div className="section-callout section-callout-locked">
+            <div>
+              <span className="news-label">UNE SECTION DU PORTAIL</span>
+              <h3>FO FREE DISTRIBUTION</h3>
+              <p>Une section dédiée à la distribution de documents et d’informations pour les salariés du groupe. L’accès est restreint et l’ouverture est prévue prochainement.</p>
+            </div>
+            <span className="locked-badge"><Lock size={14} /> Accès restreint · Ouverture prochaine</span>
+          </div>
         </section>
         <section className="news-section" id="actualites"><div className="section news-inner"><div className="news-heading"><div><p className="eyebrow">RESTER INFORMÉ</p><h2>À la une<span>.</span></h2></div><a className="coming-tag news-all-link" href="/actualites">TOUTES LES ACTUALITÉS ↗</a></div>{latestArticles.length ? <div className="home-news-grid">{latestArticles.map(item => <article className="home-news-card" key={item.id}>{item.cover_image_url && <a href={`/actualites/${item.slug}`}><img src={item.cover_image_url} alt={item.cover_image_alt || ''} loading="lazy" /></a>}<div className="home-news-card-content"><span className="news-label">{item.published_at ? new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(new Date(item.published_at)) : 'FOCOM ILIAD'}</span><h3><a href={`/actualites/${item.slug}`}>{item.title}</a></h3>{item.summary && <p>{item.summary}</p>}<a className="public-read-more" href={`/actualites/${item.slug}`}>Lire l’article ↗</a></div></article>)}</div> : <div className="news-placeholder"><div className="news-placeholder-mark">FO</div><div><span className="news-label">ACTUALITÉS FOCOM</span><h3>Les actualités FO du groupe ILIAD</h3><p>Les dernières publications apparaîtront ici dès leur mise en ligne.</p></div><a className="button button-red" href="/actualites">Consulter les actualités <span>↗</span></a><span className="news-arrow">↗</span></div>}</div></section>
         <section className="section entities-section" id="droits"><div className="section-heading compact"><div><p className="eyebrow">S’INFORMER ET SE DÉFENDRE</p><h2>Vos droits.<br /><em>Vos repères.</em></h2></div><p className="section-lead">Des ressources pour mieux comprendre vos droits au travail. Les règles pouvant varier selon la société, l’établissement et les accords applicables, rapprochez-vous de vos représentants pour une réponse adaptée à votre situation.</p></div><div className="rights-grid">{rights.map((item, i) => <article className="right-card" key={item[0]}><span>0{i + 1} / REPÈRES PRATIQUES</span><h3>{item[0]}</h3><p>{item[1]}</p><a href="#contact">Poser une question <b>↗</b></a></article>)}</div></section>
