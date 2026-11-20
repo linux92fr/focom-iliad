@@ -81,7 +81,7 @@ function App() {
             <div>
               <span className="news-label">UNE SECTION DU PORTAIL</span>
               <h3>FO FREE DISTRIBUTION</h3>
-              <p>Une section dédiée à la distribution de documents et d’informations pour les salariés du groupe. L’accès est restreint et l’ouverture est prévue prochainement.</p>
+              <p>Une section dédiée aux Free Centers du groupe ILIAD, réseau de boutiques de distribution télécom. L’accès est restreint et l’ouverture est prévue prochainement.</p>
             </div>
             <span className="locked-badge"><Lock size={14} /> Accès restreint · Ouverture prochaine</span>
           </div>
