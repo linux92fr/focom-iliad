@@ -1,6 +1,7 @@
 import { LegalFooter } from './LegalPages';
 import { ChevronDown, Lock, TrendingUp, Users } from 'lucide-react';
 import { useEffect, useState } from 'react'
+import type { FormEvent } from 'react'
 
 const navItems = [
   ['Le groupe', '#groupe'],
@@ -203,6 +204,75 @@ function ActivityDashboardCard() {
   )
 }
 
+function ContactForm() {
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setBusy(true)
+    setError('')
+    setSuccess(false)
+
+    const form = event.currentTarget
+    const data = new FormData(form)
+    const payload = {
+      name: String(data.get('name') || ''),
+      email: String(data.get('email') || ''),
+      company: String(data.get('company') || ''),
+      establishment: String(data.get('establishment') || ''),
+      subject: String(data.get('subject') || ''),
+      message: String(data.get('message') || ''),
+      consent: data.get('consent') === 'on',
+      website: String(data.get('website') || ''),
+    }
+
+    try {
+      const response = await fetch(API + '/public/contact', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const body = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(body.error || 'L’envoi du formulaire a échoué.')
+      form.reset()
+      setSuccess(true)
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'L’envoi du formulaire a échoué.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <form className="contact-form" onSubmit={submit}>
+      <div className="contact-form-grid">
+        <label>Nom<input name="name" autoComplete="name" required maxLength={100} /></label>
+        <label>Adresse e-mail<input name="email" type="email" autoComplete="email" required maxLength={254} /></label>
+        <label>Société<input name="company" autoComplete="organization" maxLength={120} placeholder="Free, ILIAD,..." /></label>
+        <label>Établissement<input name="establishment" maxLength={120} /></label>
+      </div>
+      <label>Sujet
+        <select name="subject" required defaultValue="">
+          <option value="" disabled>Choisir un sujet</option>
+          <option value="rights">Question sur mes droits</option>
+          <option value="representation">Contacter un représentant</option>
+          <option value="campaign">Revendiquer ou participer à une action</option>
+          <option value="membership">Informations sur l’adhésion</option>
+          <option value="other">Autre demande</option>
+        </select>
+      </label>
+      <label>Votre message<textarea name="message" required minLength={20} maxLength={3000} rows={6} placeholder="Précisez votre demande et, si utile, votre société et votre établissement." /></label>
+      <label className="contact-consent"><input name="consent" type="checkbox" required /><span>J’accepte que les informations saisies soient utilisées uniquement pour traiter cette demande.</span></label>
+      <label className="contact-honeypot" aria-hidden="true">Ne pas remplir<input name="website" tabIndex={-1} autoComplete="off" /></label>
+      {error && <p className="contact-form-error" role="alert">{error}</p>}
+      {success && <p className="contact-form-success" role="status">Votre demande a bien été enregistrée. FOCOM ILIAD pourra vous recontacter à l’adresse indiquée.</p>}
+      <button className="button button-red contact-submit" type="submit" disabled={busy}>{busy ? 'Envoi en cours…' : 'Envoyer ma demande'} <span aria-hidden="true">→</span></button>
+    </form>
+  )
+}
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [latestArticles, setLatestArticles] = useState<HomepageArticle[]>([])
@@ -266,7 +336,18 @@ function App() {
         <section className="action-section" id="agir"><div className="section"><div className="section-heading"><div><p className="eyebrow">REVENDIQUER ET AGIR</p><h2>Nos droits avancent<br /><em>par l’action collective.</em></h2></div><p className="section-lead">Les revendications FO partent du quotidien des salariés. Informer, consulter, construire des propositions et agir ensemble : chaque voix compte.</p></div><div className="action-grid">{actions.map((item, i) => <article className="action-card" key={item[0]}><span className="action-number">0{i + 1}</span><h3>{item[0]}</h3><p>{item[1]}</p><a href="#contact">Échanger avec FO <b>↗</b></a></article>)}</div></div></section>
         <section className="section reps-section" id="representants"><div className="section-heading"><div><p className="eyebrow">À VOS CÔTÉS</p><h2>Vos représentants<br /><em>FO sur le terrain.</em></h2></div><p className="section-lead">Les interlocuteurs et les périmètres de représentation seront organisés par société et établissement. Pour préserver la confidentialité, les coordonnées personnelles ne seront pas publiées sans accord.</p></div><div className="rep-panel"><div className="rep-mark">FO</div><div><span className="news-label">BESOIN D’UN CONTACT ?</span><h3>Vous souhaitez joindre un représentant FO ?</h3><p>Précisez votre société, votre établissement et l’objet de votre demande. Nous pourrons vous orienter vers le bon interlocuteur.</p></div><a className="button button-red" href="#contact">Nous contacter <span>↗</span></a></div></section>
         <section className="join-band" id="adherer"><div><p className="eyebrow">REJOINDRE FORCE OUVRIÈRE</p><h2>Ne restez pas seul.<br /><em>Faisons entendre votre voix.</em></h2><p>Adhérer, c’est participer à une action collective et renforcer la défense des droits des salariés.</p></div><a className="button button-light" href="#contact">Demander des informations <span>↗</span></a></section>
-        <section className="contact-section" id="contact"><div className="section contact-inner"><div><p className="eyebrow">RESTONS EN CONTACT</p><h2>Une question, une situation,<br /><em>une envie d’agir ?</em></h2></div><div className="contact-copy"><p>Écrivez-nous en indiquant votre société et votre établissement. Un contact téléphonique pourra être nécessaire pour comprendre votre demande et convenir d’un échange.</p><p className="contact-note">Les coordonnées et le formulaire sécurisé seront ajoutés lors de la mise en place de l’espace de contact.</p></div></div></section>
+        <section className="contact-section" id="contact">
+          <div className="section contact-inner">
+            <div>
+              <p className="eyebrow">RESTONS EN CONTACT</p>
+              <h2>Une question, une situation,<br /><em>une envie d’agir ?</em></h2>
+              <div className="contact-copy">
+                <p>Écrivez-nous en indiquant votre société et votre établissement. Un contact téléphonique pourra être nécessaire pour comprendre votre demande.</p>
+              </div>
+            </div>
+            <ContactForm />
+          </div>
+        </section>
       </main>
       <LegalFooter />
     </div>

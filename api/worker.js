@@ -127,6 +127,39 @@ export default {
         return json({ error: "Impossible de charger les actualités" }, 503, corsHeaders);
       }
     }
+    if (url.pathname === "/public/contact" && request.method === "POST") {
+      let input;
+      try { input = await request.json(); } catch {
+        return json({ error: "Corps JSON invalide" }, 400, corsHeaders);
+      }
+      if (typeof input.website === "string" && input.website.trim()) {
+        return json({ ok: true }, 200, corsHeaders);
+      }
+      const name = typeof input.name === "string" ? input.name.trim().slice(0, 100) : "";
+      const email = typeof input.email === "string" ? input.email.trim().slice(0, 254) : "";
+      const company = typeof input.company === "string" ? input.company.trim().slice(0, 120) : "";
+      const establishment = typeof input.establishment === "string" ? input.establishment.trim().slice(0, 120) : "";
+      const subject = typeof input.subject === "string" ? input.subject.trim().slice(0, 40) : "";
+      const message = typeof input.message === "string" ? input.message.trim().slice(0, 3000) : "";
+      const consent = input.consent === true;
+      const subjects = ["rights", "representation", "campaign", "membership", "other"];
+      if (!name || !email || !subjects.includes(subject) || message.length < 20 || !consent) {
+        return json({ error: "Veuillez compléter tous les champs requis et accepter l’utilisation de vos données." }, 400, corsHeaders);
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return json({ error: "Veuillez saisir une adresse e-mail valide." }, 400, corsHeaders);
+      }
+      try {
+        await neon(env.DATABASE_URL)`
+          INSERT INTO contact_messages
+            (name, email, company, establishment, subject, message, consent_given)
+          VALUES (${name}, ${email}, ${company || null}, ${establishment || null}, ${subject}, ${message}, TRUE)
+        `;
+        return json({ ok: true }, 201, corsHeaders);
+      } catch {
+        return json({ error: "Votre demande n’a pas pu être enregistrée. Réessayez plus tard." }, 503, corsHeaders);
+      }
+    }
     const publicArticleMatch = url.pathname.match(/^\/public\/articles\/([^/]+)$/);
     if (publicArticleMatch && request.method === "GET") {
       try {

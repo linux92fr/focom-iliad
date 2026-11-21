@@ -281,6 +281,22 @@
 .cookie-always-on{font-size:10px;font-weight:700;color:#18794e;white-space:nowrap}
 .cookie-modal-actions{justify-content:flex-end;margin-top:20px}
 
+.contact-form{display:grid;gap:16px;padding:28px;background:#fff;border:1px solid var(--line)}
+.contact-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.contact-form label{display:grid;gap:7px;font-size:11px;font-weight:700;color:var(--navy)}
+.contact-form input,.contact-form select,.contact-form textarea{width:100%;border:1px solid #dce2e8;border-radius:4px;background:#fff;color:var(--ink);padding:11px 12px;font:13px 'DM Sans',sans-serif}
+.contact-form textarea{resize:vertical;line-height:1.65}
+.contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{outline:2px solid #e7a5a8;outline-offset:1px}
+.contact-consent{grid-template-columns:16px 1fr;align-items:start;gap:10px!important;font-weight:500!important;line-height:1.55}
+.contact-consent input{width:16px;height:16px;accent-color:var(--red);margin:2px 0 0}
+.contact-honeypot{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.contact-form-error,.contact-form-success{margin:0;padding:11px 13px;font-size:12px;line-height:1.55}
+.contact-form-error{background:#fff0ef;color:#a12620;border-left:3px solid var(--red)}
+.contact-form-success{background:#edf8f1;color:#18794e;border-left:3px solid #18794e}
+.contact-submit{justify-self:start;border:0;cursor:pointer}
+.contact-submit:disabled{opacity:.65;cursor:wait}
+@media(max-width:760px){.contact-form-grid{grid-template-columns:1fr}.contact-form{padding:20px}.contact-submit{width:100%;justify-content:space-between}}
+
 /* Infobulles natives reliées à leurs déclencheurs avec CSS Anchor Positioning */
 .native-tooltip{position:absolute;inset:auto;margin:8px 0 0;border:0;border-radius:4px;background:#10243d;color:#fff;padding:7px 9px;font:700 10px 'DM Sans',sans-serif;line-height:1.2;box-shadow:0 6px 18px #10243d33;max-width:220px}
 .native-tooltip:popover-open{animation:tooltip-in .16s ease-out}

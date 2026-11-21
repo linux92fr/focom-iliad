@@ -6,6 +6,7 @@ API HTTP déployée sur Cloudflare Workers et connectée à Neon PostgreSQL.
 
 - `GET /health` : contrôle HTTP.
 - `GET /health/db` : contrôle de connexion Neon.
+- `POST /public/contact` : enregistre une demande depuis le formulaire public après validation des champs et du consentement.
 
 ## Secrets et variables
 
