@@ -106,7 +106,7 @@ export async function sendContactNotification(apiKey, { name, email, company, es
           </td>
         </tr>
         <tr>
-          <td align="left" style="padding:22px 30px 12px;">
+          <td align="center" style="padding:22px 30px 12px;">
             <a href="mailto:${safeEmail}" style="display:inline-block;padding:13px 21px;background:#c32630;color:#ffffff;text-decoration:none;font-size:14px;line-height:18px;font-weight:bold;border-radius:6px;">Répondre à cette demande</a>
           </td>
         </tr>
