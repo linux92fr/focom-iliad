@@ -13,9 +13,11 @@ API HTTP déployée sur Cloudflare Workers et connectée à Neon PostgreSQL.
 Dans Cloudflare > Worker > Settings > Variables and Secrets :
 
 - Secret `DATABASE_URL` : chaîne de connexion Neon poolée (host contenant `-pooler`).
+- Secret `BREVO_API_KEY` : clé API Brevo, utilisée pour notifier `contact@focom-iliad.fr`. L'adresse expéditeur `contact@focom-iliad.fr` doit être vérifiée dans Brevo.
 - Variable `CORS_ORIGIN` : origine exacte du site, par exemple `https://focom-iliad.fr`.
 
 Ne jamais utiliser de préfixe `VITE_` pour le secret de base. Ne pas committer de vraie chaîne de connexion.
+Ne jamais exposer la clé Brevo dans les variables du site frontend ou dans Git.
 
 ## Déploiement depuis GitHub
 

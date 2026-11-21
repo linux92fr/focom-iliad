@@ -207,13 +207,13 @@ function ActivityDashboardCard() {
 function ContactForm() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setBusy(true)
     setError('')
-    setSuccess(false)
+    setSuccessMessage('')
 
     const form = event.currentTarget
     const data = new FormData(form)
@@ -237,7 +237,9 @@ function ContactForm() {
       const body = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(body.error || 'L’envoi du formulaire a échoué.')
       form.reset()
-      setSuccess(true)
+      setSuccessMessage(body.notificationSent === false
+        ? 'Votre demande est enregistrée, mais l’alerte e-mail n’a pas pu être envoyée. Pour une prise en charge rapide, écrivez directement à contact@focom-iliad.fr.'
+        : 'Votre demande a bien été enregistrée et transmise à FOCOM ILIAD.')
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : 'L’envoi du formulaire a échoué.')
     } finally {
@@ -267,7 +269,7 @@ function ContactForm() {
       <label className="contact-consent"><input name="consent" type="checkbox" required /><span>J’accepte que les informations saisies soient utilisées uniquement pour traiter cette demande.</span></label>
       <label className="contact-honeypot" aria-hidden="true">Ne pas remplir<input name="website" tabIndex={-1} autoComplete="off" /></label>
       {error && <p className="contact-form-error" role="alert">{error}</p>}
-      {success && <p className="contact-form-success" role="status">Votre demande a bien été enregistrée. FOCOM ILIAD pourra vous recontacter à l’adresse indiquée.</p>}
+      {successMessage && <p className={`contact-form-success${successMessage.includes('mais') ? ' contact-form-warning' : ''}`} role="status">{successMessage}</p>}
       <button className="button button-red contact-submit" type="submit" disabled={busy}>{busy ? 'Envoi en cours…' : 'Envoyer ma demande'} <span aria-hidden="true">→</span></button>
     </form>
   )

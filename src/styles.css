@@ -293,6 +293,7 @@
 .contact-form-error,.contact-form-success{margin:0;padding:11px 13px;font-size:12px;line-height:1.55}
 .contact-form-error{background:#fff0ef;color:#a12620;border-left:3px solid var(--red)}
 .contact-form-success{background:#edf8f1;color:#18794e;border-left:3px solid #18794e}
+.contact-form-warning{background:#fff4df;color:#76500b;border-left-color:#c58a1a}
 .contact-submit{justify-self:start;border:0;cursor:pointer}
 .contact-submit:disabled{opacity:.65;cursor:wait}
 @media(max-width:760px){.contact-form-grid{grid-template-columns:1fr}.contact-form{padding:20px}.contact-submit{width:100%;justify-content:space-between}}

@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { neon } from '@neondatabase/serverless';
+import { sendContactNotification } from './contact-notification.js';
 
 const port = Number.parseInt(process.env.PORT ?? '3001', 10);
 const databaseUrl = process.env.DATABASE_URL;
@@ -83,7 +84,16 @@ const server = createServer(async (request, response) => {
           (name, email, company, establishment, subject, message, consent_given)
         VALUES (${name}, ${email}, ${company || null}, ${establishment || null}, ${subject}, ${message}, TRUE)
       `;
-      sendJson(response, 201, { ok: true }, corsOrigin);
+      let notificationSent = false;
+      try {
+        const apiKey = process.env.BREVO_API_KEY;
+        if (!apiKey) throw new Error('BREVO_API_KEY is not configured');
+        await sendContactNotification(apiKey, { name, email, company, establishment, subject, message });
+        notificationSent = true;
+      } catch (error) {
+        console.error('Contact request saved, but Brevo notification failed:', error instanceof Error ? error.message : 'Unknown error');
+      }
+      sendJson(response, 201, { ok: true, notificationSent }, corsOrigin);
     } catch {
       sendJson(response, 503, { error: 'Votre demande n’a pas pu être enregistrée. Réessayez plus tard.' }, corsOrigin);
     }
