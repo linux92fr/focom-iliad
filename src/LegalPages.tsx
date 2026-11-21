@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { ButtonHTMLAttributes, HTMLAttributes } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 type Consent = { essential: true; analytics: boolean; savedAt: string };
@@ -6,9 +7,9 @@ const CONSENT_KEY = 'focom-iliad-cookie-consent';
 
 export function SiteUtilities() {
   const [showTop, setShowTop] = useState(false);
-  const [showCookies, setShowCookies] = useState(false);
   const [analytics, setAnalytics] = useState(false);
   const [banner, setBanner] = useState(false);
+  const cookieDialogRef = useRef<HTMLDialogElement>(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export function SiteUtilities() {
     const value: Consent = { essential: true, analytics: analyticsChoice, savedAt: new Date().toISOString() };
     try { localStorage.setItem(CONSENT_KEY, JSON.stringify(value)); } catch { /* storage may be disabled */ }
     setBanner(false);
-    setShowCookies(false);
+    cookieDialogRef.current?.close();
   }
 
   function openCookieSettings() {
@@ -42,25 +43,46 @@ export function SiteUtilities() {
       const saved = localStorage.getItem(CONSENT_KEY);
       if (saved) setAnalytics(Boolean((JSON.parse(saved) as Consent).analytics));
     } catch { setAnalytics(false); }
-    setShowCookies(true);
+    if (cookieDialogRef.current && !cookieDialogRef.current.open) cookieDialogRef.current.showModal();
+  }
+
+  function closeCookieSettings() {
+    cookieDialogRef.current?.close();
   }
 
   return <>
-    {showTop && <button className="back-to-top" type="button" aria-label="Retour en haut de page" title="Haut de page" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>↑<span>Haut</span></button>}
+    {showTop && <>
+      <button
+        className="back-to-top native-tooltip-trigger"
+        type="button"
+        aria-label="Retour en haut de page"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        onMouseEnter={() => document.getElementById('back-to-top-tip')?.matches(':popover-open') === false && (document.getElementById('back-to-top-tip') as HTMLElement | null)?.showPopover()}
+        onMouseLeave={() => (document.getElementById('back-to-top-tip') as HTMLElement | null)?.hidePopover()}
+        onFocus={() => (document.getElementById('back-to-top-tip') as HTMLElement | null)?.showPopover()}
+        onBlur={() => (document.getElementById('back-to-top-tip') as HTMLElement | null)?.hidePopover()}
+        {...({ popoverTarget: 'back-to-top-tip', popoverTargetAction: 'toggle' } as ButtonHTMLAttributes<HTMLButtonElement>)}
+      >↑<span>Haut</span></button>
+      <div id="back-to-top-tip" className="native-tooltip" role="tooltip" {...({ popover: 'auto' } as HTMLAttributes<HTMLDivElement>)}>Haut de page</div>
+    </>}
     <button className="cookie-settings-trigger" type="button" onClick={openCookieSettings}>Cookies</button>
     {banner && <aside className="cookie-banner" role="dialog" aria-label="Choix des cookies">
       <div><strong>Respect de votre vie privée</strong><p>Les cookies strictement nécessaires au fonctionnement du portail sont utilisés. Aucun outil de mesure d’audience facultatif n’est activé actuellement. Vous pouvez consulter notre politique et modifier vos choix à tout moment.</p><Link to="/confidentialite">Politique de confidentialité et cookies</Link></div>
       <div className="cookie-banner-actions"><button type="button" className="cookie-reject" onClick={() => saveConsent(false)}>Tout refuser</button><button type="button" className="cookie-accept" onClick={() => saveConsent(true)}>Tout accepter</button><button type="button" className="cookie-customize" onClick={openCookieSettings}>Personnaliser</button></div>
     </aside>}
-    {showCookies && <div className="cookie-modal-backdrop" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) setShowCookies(false); }}>
-      <section className="cookie-modal" role="dialog" aria-modal="true" aria-labelledby="cookie-modal-title">
-        <button className="cookie-modal-close" type="button" aria-label="Fermer" onClick={() => setShowCookies(false)}>×</button>
+    <dialog
+      ref={cookieDialogRef}
+      className="cookie-modal"
+      aria-labelledby="cookie-modal-title"
+      onCancel={event => { event.preventDefault(); closeCookieSettings(); }}
+      onMouseDown={event => { if (event.target === event.currentTarget) closeCookieSettings(); }}
+    >
+        <button className="cookie-modal-close" type="button" aria-label="Fermer" onClick={closeCookieSettings}>×</button>
         <p className="eyebrow">VOS PRÉFÉRENCES</p><h2 id="cookie-modal-title">Paramètres des cookies</h2>
         <div className="cookie-choice"><div><strong>Cookies nécessaires</strong><p>Indispensables au fonctionnement et à la sécurité du portail. Ils ne peuvent pas être désactivés.</p></div><span className="cookie-always-on">Toujours actifs</span></div>
         <label className="cookie-choice"><div><strong>Mesure d’audience facultative</strong><p>Autoriser, si un outil de mesure respectueux de la vie privée est activé ultérieurement, le dépôt de cookies associés.</p></div><input type="checkbox" checked={analytics} onChange={e => setAnalytics(e.target.checked)} /></label>
         <div className="cookie-modal-actions"><button className="cookie-reject" onClick={() => saveConsent(false)}>Tout refuser</button><button className="cookie-accept" onClick={() => saveConsent(analytics)}>Enregistrer mes choix</button></div>
-      </section>
-    </div>}
+    </dialog>
   </>;
 }
 

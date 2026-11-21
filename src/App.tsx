@@ -1,5 +1,5 @@
 import { LegalFooter } from './LegalPages';
-import { Lock } from 'lucide-react';
+import { ChevronDown, Lock, TrendingUp, Users } from 'lucide-react';
 import { useEffect, useState } from 'react'
 
 const navItems = [
@@ -30,6 +30,178 @@ const actions = [
 ]
 type HomepageArticle = { id: number; title: string; slug: string; summary: string | null; cover_image_url: string | null; cover_image_alt: string | null; published_at: string };
 const API = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+
+const portalStats = [
+  {
+    value: '04',
+    label: 'Univers du groupe',
+    title: 'Des réalités diverses, une représentation commune',
+    text: 'Télécommunications, services et solutions, cloud et infrastructures, ainsi que les périmètres et établissements du groupe.',
+  },
+  {
+    value: '06',
+    label: 'Repères pratiques',
+    title: 'Vos droits expliqués',
+    text: 'Des fiches synthétiques sur le contrat de travail, le temps de travail, la rémunération, la santé au travail, la représentation collective et l’égalité professionnelle.',
+  },
+  {
+    value: '03',
+    label: 'Leviers d’action',
+    title: 'Agir collectivement',
+    text: 'Faire remonter les réalités du terrain, porter des revendications communes et se mobiliser ensemble autour des priorités des salariés.',
+  },
+]
+
+function PortalStats() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
+
+  return (
+    <section className="stats-section" aria-labelledby="stats-title">
+      <div className="stats-heading">
+        <p className="eyebrow">LE PORTAIL EN CHIFFRES</p>
+        <h2 id="stats-title">Des ressources pour<br /><em>faire entendre votre voix.</em></h2>
+      </div>
+      <div className="stats-accordion">
+        {portalStats.map((stat, index) => {
+          const isOpen = openIndex === index
+          const panelId = `stats-panel-${index}`
+          const triggerId = `stats-trigger-${index}`
+          return (
+            <article className={`stats-item${isOpen ? ' stats-item-open' : ''}`} key={stat.label}>
+              <h3>
+                <button
+                  id={triggerId}
+                  type="button"
+                  aria-expanded={isOpen}
+                  aria-controls={panelId}
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                >
+                  <span className="stats-value">{stat.value}</span>
+                  <span className="stats-label">{stat.label}</span>
+                  <span className="stats-toggle" aria-hidden="true">
+                    <ChevronDown size={18} strokeWidth={1.8} />
+                  </span>
+                </button>
+              </h3>
+              <div
+                id={panelId}
+                role="region"
+                aria-labelledby={triggerId}
+                className="stats-panel"
+              >
+                <div>
+                  <h4>{stat.title}</h4>
+                  <p>{stat.text}</p>
+                </div>
+              </div>
+            </article>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
+const portalTabs = [
+  { label: 'Le portail', target: 'accueil' },
+  { label: 'Actualités', target: 'actualites' },
+  { label: 'Vos droits', target: 'droits' },
+  { label: 'Nos actions', target: 'agir' },
+]
+
+function PortalTabBar() {
+  const [activeIndex, setActiveIndex] = useState(0)
+
+  const selectTab = (index: number) => {
+    setActiveIndex(index)
+    document.getElementById(portalTabs[index].target)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+    event.preventDefault()
+    const nextIndex = event.key === 'Home'
+      ? 0
+      : event.key === 'End'
+        ? portalTabs.length - 1
+        : (index + (event.key === 'ArrowRight' ? 1 : -1) + portalTabs.length) % portalTabs.length
+    selectTab(nextIndex)
+    document.getElementById(`portal-tab-${nextIndex}`)?.focus()
+  }
+
+  return (
+    <nav className="portal-tabs" data-active={activeIndex} aria-label="Rubriques du portail">
+      {portalTabs.map((tab, index) => (
+        <button
+          id={`portal-tab-${index}`}
+          type="button"
+          role="tab"
+          aria-selected={activeIndex === index}
+          tabIndex={activeIndex === index ? 0 : -1}
+          className={`portal-tab${activeIndex === index ? ' active' : ''}`}
+          key={tab.target}
+          onClick={() => selectTab(index)}
+          onKeyDown={event => handleKeyDown(event, index)}
+        >
+          {tab.label}
+        </button>
+      ))}
+    </nav>
+  )
+}
+
+function ActivityDashboardCard() {
+  const activity = [
+    { month: 'Jan', value: 42 },
+    { month: 'Fév', value: 58 },
+    { month: 'Mar', value: 51 },
+    { month: 'Avr', value: 76 },
+    { month: 'Mai', value: 69 },
+    { month: 'Jun', value: 88 },
+  ]
+  const maxValue = Math.max(...activity.map(item => item.value))
+
+  return (
+    <section className="dashboard-card-region" aria-labelledby="activity-title">
+      <article className="dashboard-card">
+        <header className="dashboard-card-header">
+          <div>
+            <p className="dashboard-kicker">ACTIVITÉ COLLECTIVE</p>
+            <h2 id="activity-title">Mobilisations <em>du semestre</em></h2>
+          </div>
+          <span className="dashboard-period">Jan — Jun 2026</span>
+        </header>
+        <div className="dashboard-card-body">
+          <div className="dashboard-metrics">
+            <div className="dashboard-metric dashboard-metric-primary">
+              <span className="dashboard-icon"><Users size={17} /></span>
+              <div><strong>1 248</strong><small>Participants</small></div>
+              <b><TrendingUp size={13} /> +18 %</b>
+            </div>
+            <div className="dashboard-metric">
+              <span>Établissements</span>
+              <strong>24</strong>
+            </div>
+            <div className="dashboard-metric">
+              <span>Actions menées</span>
+              <strong>36</strong>
+            </div>
+          </div>
+          <div className="dashboard-chart" aria-label="Graphique mensuel de participation">
+            {activity.map(item => (
+              <div className="dashboard-bar-column" key={item.month}>
+                <div className="dashboard-bar-track">
+                  <span style={{ height: `${(item.value / maxValue) * 100}%` }} />
+                </div>
+                <small>{item.month}</small>
+              </div>
+            ))}
+          </div>
+        </div>
+      </article>
+    </section>
+  )
+}
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -67,12 +239,15 @@ function App() {
           <div className="hero-panel"><div className="panel-top"><span>FOCOM · ILIAD</span><span>ENSEMBLE</span></div><img className="hero-logo" src="/focom-logo.jpg" alt="FOCOM, Force Ouvrière Communication" /><div className="panel-caption">INFORMER<br />DÉFENDRE<br />AGIR</div><div className="panel-bottom"><span>UN PORTAIL · DES ÉQUIPES · UNE MÊME FORCE</span><b>01 / 06</b></div></div>
           <div className="hero-index">01 <span>—</span> LE PORTAIL FO</div>
         </section>
+        <PortalTabBar />
         <section className="quick-strip" aria-label="Accès rapides">
           <a href="#actualites"><span className="quick-icon">▤</span><span><b>Actualités</b><small>Les informations du groupe</small></span><strong>↗</strong></a>
           <a href="#droits"><span className="quick-icon">§</span><span><b>Vos droits</b><small>Comprendre et connaître</small></span><strong>↗</strong></a>
           <a href="#agir"><span className="quick-icon">✳</span><span><b>Nos revendications</b><small>Nos priorités et nos actions</small></span><strong>↗</strong></a>
           <a href="#contact"><span className="quick-icon">✉</span><span><b>Nous contacter</b><small>Échanger avec FO</small></span><strong>↗</strong></a>
         </section>
+        <ActivityDashboardCard />
+        <PortalStats />
         <section className="section intro-section" id="groupe">
           <div className="section-heading"><div><p className="eyebrow">UN GROUPE, DES RÉALITÉS</p><h2>Une représentation<br /><em>au plus près du terrain.</em></h2></div><p className="section-lead">Le groupe ILIAD rassemble des activités, des métiers et des équipes aux réalités diverses. FO souhaite rendre l’information syndicale plus accessible et faciliter les échanges entre les salariés et leurs représentants.</p></div>
           <div className="topic-grid">{entities.map((item, i) => <article className="topic-card" key={item.title}><span className="topic-number">0{i + 1}</span><span className="topic-icon">{['◎', '◇', '⌘', '▦'][i]}</span><h3>{item.title}</h3><p>{item.text}</p><a className="card-arrow" href="#representants">En savoir plus <b>↗</b></a></article>)}</div>
