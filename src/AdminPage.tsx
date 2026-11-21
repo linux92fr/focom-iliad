@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { authClient, getNeonAccessToken } from './auth-client';
 
@@ -16,6 +17,32 @@ const emptyArticle = { title: '', slug: '', summary: '', body: '', cover_image_u
 
 function escapeHtml(value: string) {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function ToolbarButton({ id, label, anchor, onClick, children }: {
+  id: string;
+  label: string;
+  anchor: string;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  const tooltipId = `toolbar-tip-${id}`;
+  const showTooltip = () => (document.getElementById(tooltipId) as HTMLElement | null)?.showPopover();
+  const hideTooltip = () => (document.getElementById(tooltipId) as HTMLElement | null)?.hidePopover();
+
+  return <>
+    <button
+      type="button"
+      className={`toolbar-tooltip-trigger ${anchor}`}
+      onClick={onClick}
+      onMouseEnter={showTooltip}
+      onMouseLeave={hideTooltip}
+      onFocus={showTooltip}
+      onBlur={hideTooltip}
+      {...({ popoverTarget: tooltipId, popoverTargetAction: 'toggle' } as ButtonHTMLAttributes<HTMLButtonElement>)}
+    >{children}</button>
+    <div id={tooltipId} className="native-tooltip" role="tooltip" {...({ popover: 'auto' } as HTMLAttributes<HTMLDivElement>)}>{label}</div>
+  </>
 }
 
 // Small, dependency-free Markdown preview. Source text is escaped before formatting.
@@ -180,13 +207,13 @@ export default function AdminPage() {
             <div className="admin-cover-fields"><label>Image de couverture (URL HTTPS)<input type="url" placeholder="https://…" value={form.cover_image_url} onChange={e => setForm({ ...form, cover_image_url: e.target.value })} /></label><label>Texte alternatif de l’image<input maxLength={250} placeholder="Description de l’image" value={form.cover_image_alt} onChange={e => setForm({ ...form, cover_image_alt: e.target.value })} /></label>{form.cover_image_url && <img className="admin-cover-preview" src={form.cover_image_url} alt={form.cover_image_alt || 'Aperçu de la couverture'} />}</div>
             <div className="admin-editor-toolbar">
               <span>MISE EN FORME</span>
-              <button type="button" onClick={() => insertMarkdown('**', '**', 'texte en gras')} title="Gras"><strong>G</strong></button>
-              <button type="button" onClick={() => insertMarkdown('*', '*', 'texte en italique')} title="Italique"><em>I</em></button>
-              <button type="button" onClick={() => insertMarkdown('## ', '', 'Titre de section')} title="Titre de section">H2</button>
-              <button type="button" onClick={() => insertMarkdown('- ', '', 'Élément de liste')} title="Liste">• Liste</button>
-              <button type="button" onClick={() => insertMarkdown('[', '](https://)', 'texte du lien')} title="Lien">Lien</button>
-              <button type="button" onClick={() => insertMarkdown('![', '](https://adresse-image)', 'description image')} title="Insérer une image">Image</button>
-              <button type="button" onClick={() => insertMarkdown('> ', '', 'Citation')} title="Citation">Citation</button>
+              <ToolbarButton id="bold" label="Gras" anchor="toolbar-anchor-bold" onClick={() => insertMarkdown('**', '**', 'texte en gras')}><strong>G</strong></ToolbarButton>
+              <ToolbarButton id="italic" label="Italique" anchor="toolbar-anchor-italic" onClick={() => insertMarkdown('*', '*', 'texte en italique')}><em>I</em></ToolbarButton>
+              <ToolbarButton id="heading" label="Titre de section" anchor="toolbar-anchor-heading" onClick={() => insertMarkdown('## ', '', 'Titre de section')}>H2</ToolbarButton>
+              <ToolbarButton id="list" label="Liste" anchor="toolbar-anchor-list" onClick={() => insertMarkdown('- ', '', 'Élément de liste')}>• Liste</ToolbarButton>
+              <ToolbarButton id="link" label="Lien" anchor="toolbar-anchor-link" onClick={() => insertMarkdown('[', '](https://)', 'texte du lien')}>Lien</ToolbarButton>
+              <ToolbarButton id="image" label="Insérer une image" anchor="toolbar-anchor-image" onClick={() => insertMarkdown('![', '](https://adresse-image)', 'description image')}>Image</ToolbarButton>
+              <ToolbarButton id="quote" label="Citation" anchor="toolbar-anchor-quote" onClick={() => insertMarkdown('> ', '', 'Citation')}>Citation</ToolbarButton>
               <button type="button" className={preview ? 'preview-active' : ''} onClick={() => setPreview(!preview)}>{preview ? 'Éditer' : 'Prévisualiser'}</button>
             </div>
             {preview ? (
