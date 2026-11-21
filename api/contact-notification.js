@@ -38,6 +38,14 @@ export async function sendContactNotification(apiKey, { name, email, company, es
   });
 
   if (!response.ok) {
-    throw new Error(`Brevo returned HTTP ${response.status}`);
+    const responseBody = await response.text();
+    let details = "";
+    try {
+      const error = JSON.parse(responseBody);
+      details = [error.code, error.message].filter(value => typeof value === "string" && value.trim()).join(": ");
+    } catch {
+      details = responseBody.replace(/\s+/g, " ").trim().slice(0, 300);
+    }
+    throw new Error(`Brevo returned HTTP ${response.status}${details ? `: ${details.slice(0, 500)}` : ""}`);
   }
 }
