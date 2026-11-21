@@ -1,5 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import { createRemoteJWKSet, jwtVerify } from "jose";
+import { sendContactNotification } from "./contact-notification.js";
 
 let cachedJwks;
 function getJwks(env) {
@@ -155,7 +156,15 @@ export default {
             (name, email, company, establishment, subject, message, consent_given)
           VALUES (${name}, ${email}, ${company || null}, ${establishment || null}, ${subject}, ${message}, TRUE)
         `;
-        return json({ ok: true }, 201, corsHeaders);
+        let notificationSent = false;
+        try {
+          if (!env.BREVO_API_KEY) throw new Error("BREVO_API_KEY is not configured");
+          await sendContactNotification(env.BREVO_API_KEY, { name, email, company, establishment, subject, message });
+          notificationSent = true;
+        } catch (error) {
+          console.error("Contact request saved, but Brevo notification failed:", error instanceof Error ? error.message : "Unknown error");
+        }
+        return json({ ok: true, notificationSent }, 201, corsHeaders);
       } catch {
         return json({ error: "Votre demande n’a pas pu être enregistrée. Réessayez plus tard." }, 503, corsHeaders);
       }
