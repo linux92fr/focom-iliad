@@ -1,5 +1,5 @@
 import { LegalFooter } from './LegalPages';
-import { ChevronDown, Lock, TrendingUp, Users } from 'lucide-react';
+import { ChevronDown, Lock, Users } from 'lucide-react';
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 
@@ -153,12 +153,9 @@ function PortalTabBar() {
 
 function ActivityDashboardCard() {
   const activity = [
-    { month: 'Jan', value: 42 },
-    { month: 'Fév', value: 58 },
-    { month: 'Mar', value: 51 },
-    { month: 'Avr', value: 76 },
-    { month: 'Mai', value: 69 },
-    { month: 'Jun', value: 88 },
+    { country: 'France', value: 2.4 },
+    { country: 'Pologne', value: 5.1 },
+    { country: 'Italie', value: 9.9 },
   ]
   const maxValue = Math.max(...activity.map(item => item.value))
 
@@ -167,38 +164,51 @@ function ActivityDashboardCard() {
       <article className="dashboard-card">
         <header className="dashboard-card-header">
           <div>
-            <p className="dashboard-kicker">ACTIVITÉ COLLECTIVE</p>
-            <h2 id="activity-title">Mobilisations <em>du semestre</em></h2>
+            <p className="dashboard-kicker">PRÉSENCE FREE EN FRANCE</p>
+            <h2 id="activity-title">Un réseau national, <em>une force collective.</em></h2>
           </div>
-          <span className="dashboard-period">Jan — Jun 2026</span>
+          <span className="dashboard-period">Données France · 2026</span>
         </header>
         <div className="dashboard-card-body">
           <div className="dashboard-metrics">
             <div className="dashboard-metric dashboard-metric-primary">
               <span className="dashboard-icon"><Users size={17} /></span>
-              <div><strong>1 248</strong><small>Participants</small></div>
-              <b><TrendingUp size={13} /> +18 %</b>
+              <div><strong>11 031</strong><small>Collaborateurs en France</small></div>
             </div>
             <div className="dashboard-metric">
-              <span>Établissements</span>
-              <strong>24</strong>
+              <span>Boutiques</span>
+              <strong>234</strong>
             </div>
             <div className="dashboard-metric">
-              <span>Actions menées</span>
-              <strong>36</strong>
+              <span>Équipes Free Prox</span>
+              <strong>130</strong>
             </div>
           </div>
-          <div className="dashboard-chart" aria-label="Graphique mensuel de participation">
+          <div>
+            <p className="dashboard-chart-label">Groupe Iliad · CA services 7,33 Md€ (+3,9 %) · croissance organique par pays sur 9 mois</p>
+            <div className="dashboard-chart dashboard-chart-countries" aria-label="Croissance organique du chiffre d’affaires services par pays sur neuf mois">
             {activity.map(item => (
-              <div className="dashboard-bar-column" key={item.month}>
+              <div className="dashboard-bar-column" key={item.country}>
                 <div className="dashboard-bar-track">
                   <span style={{ height: `${(item.value / maxValue) * 100}%` }} />
                 </div>
-                <small>{item.month}</small>
+                <b>+{item.value.toLocaleString('fr-FR', { minimumFractionDigits: 1 })} %</b>
+                <small>{item.country}</small>
               </div>
             ))}
+            </div>
           </div>
         </div>
+        <p className="dashboard-ambition">
+          <strong>Notre ambition :</strong> renforcer la présence FO COM sur tous les périmètres, développer son réseau
+          et accompagner chaque collaborateur en France afin de construire un rapport de force durable au service des salariés.
+        </p>
+        <footer className="dashboard-source">
+          <span>Effectifs et réseau : données FO COM fournies pour cette présentation.<br />Données financières : communiqué du groupe Iliad du 17 novembre 2026.</span>
+          <a href="https://www.iliad.fr/fr/actualites/article/la-croissance-du-groupe-iliad-s-accelere-au-3eme-trimestre-2026" target="_blank" rel="noopener noreferrer">
+            Source Iliad ↗
+          </a>
+        </footer>
       </article>
     </section>
   )
